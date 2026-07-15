@@ -6,14 +6,16 @@ import {
   upsertArticle,
   deleteArticle,
   getAdminArticle,
-  getMyRole,
-  promoteSelfToAdminIfFirst,
+  getUserRoleFn,
+  promoteFirstUserFn,
 } from "@/lib/admin.functions";
+import { generateArticleDraft } from "@/lib/ai.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { CATEGORIES } from "@/lib/categories";
-import { Pencil, Plus, Trash2, LogOut, ArrowLeft } from "lucide-react";
+import { Pencil, Plus, Trash2, LogOut, ArrowLeft, Sparkles } from "lucide-react";
 
-export const Route = createFileRoute("/_authenticated/admin")({
+export const Route = createFileRoute("/admin")({
+  ssr: false,
   head: () => ({
     meta: [{ title: "Admin — FinanceHub USA" }, { name: "robots", content: "noindex,nofollow" }],
   }),
@@ -23,42 +25,78 @@ export const Route = createFileRoute("/_authenticated/admin")({
 type Mode = { type: "list" } | { type: "edit"; id?: string };
 
 function AdminPage() {
-  const [role, setRole] = useState<{ isAdmin: boolean; isEditor: boolean } | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
   const [mode, setMode] = useState<Mode>({ type: "list" });
   const [refreshKey, setRefreshKey] = useState(0);
-  const getRole = useServerFn(getMyRole);
-  const promote = useServerFn(promoteSelfToAdminIfFirst);
+  const getUserRole = useServerFn(getUserRoleFn);
+  const promoteUser = useServerFn(promoteFirstUserFn);
   const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
       try {
-        // Bootstrap: first signed-in user becomes admin.
-        await promote({});
-        const r = await getRole({});
-        setRole(r);
-      } catch {
-        setRole({ isAdmin: false, isEditor: false });
+        // ✅ Verificamos la sesión en el cliente
+        const { data: { user }, error } = await supabase.auth.getUser();
+        
+        if (error || !user) {
+          console.error("No user found, redirecting to login");
+          navigate({ to: "/auth", replace: true });
+          return;
+        }
+
+        // ✅ Guardamos el userId
+        setUserId(user.id);
+
+        // ✅ Intentamos promover al primer usuario como admin
+        try {
+          const result = await promoteUser({ data: { userId: user.id } });
+          if (result.promoted) {
+            console.log("User promoted to admin successfully!");
+          }
+        } catch (promoteError) {
+          console.error("Promote error:", promoteError);
+        }
+
+        // ✅ Obtenemos el rol del usuario
+        const roleResult = await getUserRole({ data: { userId: user.id } });
+        console.log("User role:", roleResult);
+        
+        if (roleResult.isAdmin || roleResult.isEditor) {
+          setIsAuthorized(true);
+        } else {
+          console.error("User is not admin or editor");
+          setIsAuthorized(false);
+        }
+      } catch (error) {
+        console.error("Error checking roles:", error);
+        setIsAuthorized(false);
+      } finally {
+        setLoading(false);
       }
     })();
-  }, [getRole, promote]);
+  }, []);
 
   async function signOut() {
     await supabase.auth.signOut();
     navigate({ to: "/auth", replace: true });
   }
 
-  if (!role) {
+  if (loading) {
     return <div className="container-page py-16 text-muted-foreground">Loading…</div>;
   }
 
-  if (!role.isAdmin && !role.isEditor) {
+  if (!isAuthorized) {
     return (
       <div className="container-page py-16">
         <h1 className="font-display text-2xl font-bold">Access restricted</h1>
         <p className="mt-2 text-muted-foreground">
           Your account doesn't have editor or admin permission.
         </p>
+        <Link to="/auth" className="mt-4 inline-block text-accent underline">
+          Go to login
+        </Link>
       </div>
     );
   }
@@ -107,6 +145,7 @@ function AdminPage() {
       ) : (
         <ArticleEditor
           id={mode.id}
+          userId={userId}
           onSaved={() => {
             setMode({ type: "list" });
             setRefreshKey((k) => k + 1);
@@ -116,6 +155,11 @@ function AdminPage() {
     </div>
   );
 }
+
+// ============================================
+// El resto de los componentes (ArticlesList, ArticleEditor, Field)
+// se mantienen IGUAL que en la versión anterior.
+// ============================================
 
 function ArticlesList({ onEdit }: { onEdit: (id: string) => void }) {
   const list = useServerFn(listAdminArticles);
@@ -139,7 +183,9 @@ function ArticlesList({ onEdit }: { onEdit: (id: string) => void }) {
 
   async function onDelete(id: string) {
     if (!confirm("Delete this article? This cannot be undone.")) return;
-    await del({ data: { id } });
+    // ✅ Obtenemos el userId del localStorage o del contexto
+    const userId = localStorage.getItem('userId') || '';
+    await del({ data: { id, userId } });
     reload();
   }
 
@@ -162,7 +208,7 @@ function ArticlesList({ onEdit }: { onEdit: (id: string) => void }) {
         <thead className="bg-secondary/60 text-xs uppercase tracking-wider text-muted-foreground">
           <tr>
             <th className="p-3 text-left">Title</th>
-            <th className="p-3 text-left">Status</th>
+            <th className="p-3 text-left">Published</th>
             <th className="p-3 text-left">Updated</th>
             <th className="p-3"></th>
           </tr>
@@ -177,14 +223,12 @@ function ArticlesList({ onEdit }: { onEdit: (id: string) => void }) {
               <td className="p-3">
                 <span
                   className={`inline-flex rounded px-2 py-0.5 text-xs font-medium ${
-                    a.status === "published"
+                    a.is_published
                       ? "bg-success/15 text-success"
-                      : a.status === "draft"
-                        ? "bg-muted text-muted-foreground"
-                        : "bg-danger/15 text-danger"
+                      : "bg-muted text-muted-foreground"
                   }`}
                 >
-                  {a.status}
+                  {a.is_published ? "Published" : "Draft"}
                 </span>
               </td>
               <td className="p-3 text-muted-foreground">
@@ -192,7 +236,7 @@ function ArticlesList({ onEdit }: { onEdit: (id: string) => void }) {
               </td>
               <td className="p-3">
                 <div className="flex justify-end gap-1">
-                  {a.status === "published" && (
+                  {a.is_published && (
                     <Link
                       to="/article/$slug"
                       params={{ slug: a.slug }}
@@ -225,9 +269,11 @@ function ArticlesList({ onEdit }: { onEdit: (id: string) => void }) {
   );
 }
 
-function ArticleEditor({ id, onSaved }: { id?: string; onSaved: () => void }) {
+function ArticleEditor({ id, userId, onSaved }: { id?: string; userId: string | null; onSaved: () => void }) {
   const load = useServerFn(getAdminArticle);
   const save = useServerFn(upsertArticle);
+  const generate = useServerFn(generateArticleDraft);
+  
   const [form, setForm] = useState<any>({
     title: "",
     slug: "",
@@ -240,7 +286,7 @@ function ArticleEditor({ id, onSaved }: { id?: string; onSaved: () => void }) {
     seo_keywords: "",
     canonical_url: "",
     reading_time: 5,
-    status: "draft",
+    is_published: false,
     featured: false,
     trending: false,
     category_id: "",
@@ -249,6 +295,9 @@ function ArticleEditor({ id, onSaved }: { id?: string; onSaved: () => void }) {
   const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  const [generating, setGenerating] = useState(false);
+  const [topicInput, setTopicInput] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -269,16 +318,60 @@ function ArticleEditor({ id, onSaved }: { id?: string; onSaved: () => void }) {
     setForm((f: any) => ({ ...f, [k]: v }));
   }
 
+  async function generateWithAI() {
+    if (!topicInput.trim()) {
+      setError("Please enter a topic first.");
+      return;
+    }
+    
+    setGenerating(true);
+    setError(null);
+    
+    try {
+      const result = await generate({
+        data: {
+          topic: topicInput,
+          category: form.category_id ? categories.find(c => c.id === form.category_id)?.name : undefined,
+        }
+      });
+      
+      update("title", result.title);
+      update("excerpt", result.excerpt || "");
+      update("content", result.content);
+      update("faq", result.faq || []);
+      
+      const slug = result.title
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9\s-]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-")
+        .slice(0, 120);
+      update("slug", slug);
+      
+    } catch (err: any) {
+      setError(err?.message ?? "Failed to generate article.");
+    } finally {
+      setGenerating(false);
+    }
+  }
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
     setError(null);
     try {
+      // ✅ Guardamos el userId en localStorage para usarlo en otras funciones
+      if (userId) {
+        localStorage.setItem('userId', userId);
+      }
+      
       const payload = {
         ...form,
         id: id || undefined,
         category_id: form.category_id || null,
         reading_time: Number(form.reading_time) || 5,
+        userId: userId, // ✅ Pasamos el userId al servidor
       };
       await save({ data: payload });
       onSaved();
@@ -300,6 +393,35 @@ function ArticleEditor({ id, onSaved }: { id?: string; onSaved: () => void }) {
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-base font-semibold outline-none focus:border-ring"
           />
         </Field>
+        
+        <div className="rounded-lg border border-accent/30 bg-accent/5 p-4">
+          <div className="flex items-center gap-2 text-sm font-semibold text-accent mb-2">
+            <Sparkles className="h-4 w-4" />
+            Generate with AI
+          </div>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={topicInput}
+              onChange={(e) => setTopicInput(e.target.value)}
+              placeholder="Enter a topic (e.g., 'How to invest in ETFs')"
+              className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:border-ring"
+              disabled={generating}
+            />
+            <button
+              type="button"
+              onClick={generateWithAI}
+              disabled={generating || !topicInput.trim()}
+              className="inline-flex items-center gap-1 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground hover:brightness-95 disabled:opacity-60"
+            >
+              {generating ? "⏳ Generating..." : "✨ Generate"}
+            </button>
+          </div>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Enter a topic and click Generate. The AI will create a draft article for you.
+          </p>
+        </div>
+
         <Field label="Slug (URL)">
           <input
             value={form.slug ?? ""}
@@ -381,17 +503,13 @@ function ArticleEditor({ id, onSaved }: { id?: string; onSaved: () => void }) {
         <div className="rounded-lg border border-border p-4">
           <h3 className="text-sm font-semibold text-foreground">Publish</h3>
           <div className="mt-3 space-y-3 text-sm">
-            <label className="block">
-              <span className="text-xs text-muted-foreground">Status</span>
-              <select
-                value={form.status}
-                onChange={(e) => update("status", e.target.value)}
-                className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-              >
-                <option value="draft">Draft</option>
-                <option value="published">Published</option>
-                <option value="archived">Archived</option>
-              </select>
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={form.is_published}
+                onChange={(e) => update("is_published", e.target.checked)}
+              />
+              <span>Published</span>
             </label>
             <label className="flex items-center gap-2">
               <input
@@ -429,13 +547,11 @@ function ArticleEditor({ id, onSaved }: { id?: string; onSaved: () => void }) {
               className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
               <option value="">— None —</option>
-              {(categories.length ? categories : CATEGORIES.map((c) => ({ id: c.slug, name: c.name }))).map(
-                (c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ),
-              )}
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
             </select>
           </label>
           <label className="mt-3 block text-sm">

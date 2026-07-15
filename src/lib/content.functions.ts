@@ -19,11 +19,11 @@ const ARTICLE_COLS =
 export const getHomeData = createServerFn({ method: "GET" }).handler(async () => {
   const sb = publicClient();
   const [latest, featured, trending, categories] = await Promise.all([
-    sb.from("articles").select(ARTICLE_COLS).eq("status", "published")
+    sb.from("articles").select(ARTICLE_COLS).eq("is_published", true)
       .order("published_at", { ascending: false }).limit(12),
-    sb.from("articles").select(ARTICLE_COLS).eq("status", "published").eq("featured", true)
+    sb.from("articles").select(ARTICLE_COLS).eq("is_published", true).eq("featured", true)
       .order("published_at", { ascending: false }).limit(6),
-    sb.from("articles").select(ARTICLE_COLS).eq("status", "published").eq("trending", true)
+    sb.from("articles").select(ARTICLE_COLS).eq("is_published", true).eq("trending", true)
       .order("view_count", { ascending: false }).limit(6),
     sb.from("categories").select("slug,name,description,seo_description").order("sort_order"),
   ]);
@@ -44,7 +44,7 @@ export const getCategoryPage = createServerFn({ method: "GET" })
     const { data: articles } = await sb
       .from("articles")
       .select(ARTICLE_COLS)
-      .eq("status", "published")
+      .eq("is_published", true)
       .eq("category_id", category.id)
       .order("published_at", { ascending: false })
       .limit(30);
@@ -59,7 +59,7 @@ export const getArticleBySlug = createServerFn({ method: "GET" })
       .from("articles")
       .select(`*, categories(slug,name), profiles:author_id(display_name,slug,avatar_url,bio,twitter,website)`)
       .eq("slug", data.slug)
-      .eq("status", "published")
+      .eq("is_published", true)
       .maybeSingle();
     if (!article) return { article: null, related: [] as any[] };
     const related = article.category_id
@@ -67,7 +67,7 @@ export const getArticleBySlug = createServerFn({ method: "GET" })
           await sb
             .from("articles")
             .select(ARTICLE_COLS)
-            .eq("status", "published")
+            .eq("is_published", true)
             .eq("category_id", article.category_id)
             .neq("id", article.id)
             .order("published_at", { ascending: false })
@@ -85,7 +85,7 @@ export const searchArticles = createServerFn({ method: "GET" })
     const { data: results } = await sb
       .from("articles")
       .select(ARTICLE_COLS)
-      .eq("status", "published")
+      .eq("is_published", true)
       .or(`title.ilike.%${q}%,excerpt.ilike.%${q}%`)
       .order("published_at", { ascending: false })
       .limit(30);
@@ -115,7 +115,7 @@ export const subscribeNewsletter = createServerFn({ method: "POST" })
 export const getSitemapEntries = createServerFn({ method: "GET" }).handler(async () => {
   const sb = publicClient();
   const [{ data: articles }, { data: categories }] = await Promise.all([
-    sb.from("articles").select("slug,updated_at,published_at").eq("status", "published").limit(5000),
+    sb.from("articles").select("slug,updated_at,published_at").eq("is_published", true).limit(5000),
     sb.from("categories").select("slug,updated_at"),
   ]);
   return { articles: articles ?? [], categories: categories ?? [] };
@@ -126,7 +126,7 @@ export const getRssItems = createServerFn({ method: "GET" }).handler(async () =>
   const { data } = await sb
     .from("articles")
     .select("slug,title,excerpt,published_at,featured_image")
-    .eq("status", "published")
+    .eq("is_published", true)
     .order("published_at", { ascending: false })
     .limit(30);
   return { items: data ?? [] };
