@@ -2,19 +2,20 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 
-export const Route = createFileRoute("/tools/mortgage")({
+export const Route = createFileRoute("/mortgage")({
   head: () => ({
     meta: [
       { title: "Mortgage Calculator — FinanceHub USA" },
       { name: "description", content: "Free mortgage calculator: estimate your monthly principal and interest payment and total loan cost." },
       { property: "og:title", content: "Mortgage Calculator — FinanceHub USA" },
-      { property: "og:url", content: "/tools/mortgage" },
+      { property: "og:url", content: "/mortgage" },
     ],
-    links: [{ rel: "canonical", href: "/tools/mortgage" }],
+    links: [{ rel: "canonical", href: "/mortgage" }],
   }),
   component: MortgagePage,
 });
 
+// ... (resto del código igual que antes)
 function MortgagePage() {
   const [home, setHome] = useState(400000);
   const [down, setDown] = useState(80000);

@@ -13,10 +13,19 @@ import { Route as ToolsRouteImport } from './routes/tools'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SearchRouteImport } from './routes/search'
+import { Route as SavingsRouteImport } from './routes/savings'
 import { Route as RssDotxmlRouteImport } from './routes/rss[.]xml'
+import { Route as RetirementRouteImport } from './routes/retirement'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as NetWorthRouteImport } from './routes/net-worth'
+import { Route as MortgageRouteImport } from './routes/mortgage'
+import { Route as LoanRouteImport } from './routes/loan'
+import { Route as InvestmentRouteImport } from './routes/investment'
+import { Route as InflationRouteImport } from './routes/inflation'
+import { Route as EmergencyFundRouteImport } from './routes/emergency-fund'
 import { Route as EditorialPolicyRouteImport } from './routes/editorial-policy'
 import { Route as DisclaimerRouteImport } from './routes/disclaimer'
+import { Route as CreditCardPayoffRouteImport } from './routes/credit-card-payoff'
 import { Route as CookiePolicyRouteImport } from './routes/cookie-policy'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CompoundInterestRouteImport } from './routes/compound-interest'
@@ -24,8 +33,6 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ToolsMortgageRouteImport } from './routes/tools.mortgage'
-import { Route as ToolsLoanRouteImport } from './routes/tools.loan'
 import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 import { Route as ArticleSlugRouteImport } from './routes/article.$slug'
 
@@ -49,14 +56,54 @@ const SearchRoute = SearchRouteImport.update({
   path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SavingsRoute = SavingsRouteImport.update({
+  id: '/savings',
+  path: '/savings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RssDotxmlRoute = RssDotxmlRouteImport.update({
   id: '/rss.xml',
   path: '/rss.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RetirementRoute = RetirementRouteImport.update({
+  id: '/retirement',
+  path: '/retirement',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NetWorthRoute = NetWorthRouteImport.update({
+  id: '/net-worth',
+  path: '/net-worth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MortgageRoute = MortgageRouteImport.update({
+  id: '/mortgage',
+  path: '/mortgage',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoanRoute = LoanRouteImport.update({
+  id: '/loan',
+  path: '/loan',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InvestmentRoute = InvestmentRouteImport.update({
+  id: '/investment',
+  path: '/investment',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InflationRoute = InflationRouteImport.update({
+  id: '/inflation',
+  path: '/inflation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmergencyFundRoute = EmergencyFundRouteImport.update({
+  id: '/emergency-fund',
+  path: '/emergency-fund',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EditorialPolicyRoute = EditorialPolicyRouteImport.update({
@@ -67,6 +114,11 @@ const EditorialPolicyRoute = EditorialPolicyRouteImport.update({
 const DisclaimerRoute = DisclaimerRouteImport.update({
   id: '/disclaimer',
   path: '/disclaimer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreditCardPayoffRoute = CreditCardPayoffRouteImport.update({
+  id: '/credit-card-payoff',
+  path: '/credit-card-payoff',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CookiePolicyRoute = CookiePolicyRouteImport.update({
@@ -104,16 +156,6 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ToolsMortgageRoute = ToolsMortgageRouteImport.update({
-  id: '/mortgage',
-  path: '/mortgage',
-  getParentRoute: () => ToolsRoute,
-} as any)
-const ToolsLoanRoute = ToolsLoanRouteImport.update({
-  id: '/loan',
-  path: '/loan',
-  getParentRoute: () => ToolsRoute,
-} as any)
 const CategorySlugRoute = CategorySlugRouteImport.update({
   id: '/category/$slug',
   path: '/category/$slug',
@@ -133,18 +175,25 @@ export interface FileRoutesByFullPath {
   '/compound-interest': typeof CompoundInterestRoute
   '/contact': typeof ContactRoute
   '/cookie-policy': typeof CookiePolicyRoute
+  '/credit-card-payoff': typeof CreditCardPayoffRoute
   '/disclaimer': typeof DisclaimerRoute
   '/editorial-policy': typeof EditorialPolicyRoute
+  '/emergency-fund': typeof EmergencyFundRoute
+  '/inflation': typeof InflationRoute
+  '/investment': typeof InvestmentRoute
+  '/loan': typeof LoanRoute
+  '/mortgage': typeof MortgageRoute
+  '/net-worth': typeof NetWorthRoute
   '/privacy': typeof PrivacyRoute
+  '/retirement': typeof RetirementRoute
   '/rss.xml': typeof RssDotxmlRoute
+  '/savings': typeof SavingsRoute
   '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
-  '/tools': typeof ToolsRouteWithChildren
+  '/tools': typeof ToolsRoute
   '/article/$slug': typeof ArticleSlugRoute
   '/category/$slug': typeof CategorySlugRoute
-  '/tools/loan': typeof ToolsLoanRoute
-  '/tools/mortgage': typeof ToolsMortgageRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -154,18 +203,25 @@ export interface FileRoutesByTo {
   '/compound-interest': typeof CompoundInterestRoute
   '/contact': typeof ContactRoute
   '/cookie-policy': typeof CookiePolicyRoute
+  '/credit-card-payoff': typeof CreditCardPayoffRoute
   '/disclaimer': typeof DisclaimerRoute
   '/editorial-policy': typeof EditorialPolicyRoute
+  '/emergency-fund': typeof EmergencyFundRoute
+  '/inflation': typeof InflationRoute
+  '/investment': typeof InvestmentRoute
+  '/loan': typeof LoanRoute
+  '/mortgage': typeof MortgageRoute
+  '/net-worth': typeof NetWorthRoute
   '/privacy': typeof PrivacyRoute
+  '/retirement': typeof RetirementRoute
   '/rss.xml': typeof RssDotxmlRoute
+  '/savings': typeof SavingsRoute
   '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
-  '/tools': typeof ToolsRouteWithChildren
+  '/tools': typeof ToolsRoute
   '/article/$slug': typeof ArticleSlugRoute
   '/category/$slug': typeof CategorySlugRoute
-  '/tools/loan': typeof ToolsLoanRoute
-  '/tools/mortgage': typeof ToolsMortgageRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -176,18 +232,25 @@ export interface FileRoutesById {
   '/compound-interest': typeof CompoundInterestRoute
   '/contact': typeof ContactRoute
   '/cookie-policy': typeof CookiePolicyRoute
+  '/credit-card-payoff': typeof CreditCardPayoffRoute
   '/disclaimer': typeof DisclaimerRoute
   '/editorial-policy': typeof EditorialPolicyRoute
+  '/emergency-fund': typeof EmergencyFundRoute
+  '/inflation': typeof InflationRoute
+  '/investment': typeof InvestmentRoute
+  '/loan': typeof LoanRoute
+  '/mortgage': typeof MortgageRoute
+  '/net-worth': typeof NetWorthRoute
   '/privacy': typeof PrivacyRoute
+  '/retirement': typeof RetirementRoute
   '/rss.xml': typeof RssDotxmlRoute
+  '/savings': typeof SavingsRoute
   '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
-  '/tools': typeof ToolsRouteWithChildren
+  '/tools': typeof ToolsRoute
   '/article/$slug': typeof ArticleSlugRoute
   '/category/$slug': typeof CategorySlugRoute
-  '/tools/loan': typeof ToolsLoanRoute
-  '/tools/mortgage': typeof ToolsMortgageRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -199,18 +262,25 @@ export interface FileRouteTypes {
     | '/compound-interest'
     | '/contact'
     | '/cookie-policy'
+    | '/credit-card-payoff'
     | '/disclaimer'
     | '/editorial-policy'
+    | '/emergency-fund'
+    | '/inflation'
+    | '/investment'
+    | '/loan'
+    | '/mortgage'
+    | '/net-worth'
     | '/privacy'
+    | '/retirement'
     | '/rss.xml'
+    | '/savings'
     | '/search'
     | '/sitemap.xml'
     | '/terms'
     | '/tools'
     | '/article/$slug'
     | '/category/$slug'
-    | '/tools/loan'
-    | '/tools/mortgage'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -220,18 +290,25 @@ export interface FileRouteTypes {
     | '/compound-interest'
     | '/contact'
     | '/cookie-policy'
+    | '/credit-card-payoff'
     | '/disclaimer'
     | '/editorial-policy'
+    | '/emergency-fund'
+    | '/inflation'
+    | '/investment'
+    | '/loan'
+    | '/mortgage'
+    | '/net-worth'
     | '/privacy'
+    | '/retirement'
     | '/rss.xml'
+    | '/savings'
     | '/search'
     | '/sitemap.xml'
     | '/terms'
     | '/tools'
     | '/article/$slug'
     | '/category/$slug'
-    | '/tools/loan'
-    | '/tools/mortgage'
   id:
     | '__root__'
     | '/'
@@ -241,18 +318,25 @@ export interface FileRouteTypes {
     | '/compound-interest'
     | '/contact'
     | '/cookie-policy'
+    | '/credit-card-payoff'
     | '/disclaimer'
     | '/editorial-policy'
+    | '/emergency-fund'
+    | '/inflation'
+    | '/investment'
+    | '/loan'
+    | '/mortgage'
+    | '/net-worth'
     | '/privacy'
+    | '/retirement'
     | '/rss.xml'
+    | '/savings'
     | '/search'
     | '/sitemap.xml'
     | '/terms'
     | '/tools'
     | '/article/$slug'
     | '/category/$slug'
-    | '/tools/loan'
-    | '/tools/mortgage'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -263,14 +347,23 @@ export interface RootRouteChildren {
   CompoundInterestRoute: typeof CompoundInterestRoute
   ContactRoute: typeof ContactRoute
   CookiePolicyRoute: typeof CookiePolicyRoute
+  CreditCardPayoffRoute: typeof CreditCardPayoffRoute
   DisclaimerRoute: typeof DisclaimerRoute
   EditorialPolicyRoute: typeof EditorialPolicyRoute
+  EmergencyFundRoute: typeof EmergencyFundRoute
+  InflationRoute: typeof InflationRoute
+  InvestmentRoute: typeof InvestmentRoute
+  LoanRoute: typeof LoanRoute
+  MortgageRoute: typeof MortgageRoute
+  NetWorthRoute: typeof NetWorthRoute
   PrivacyRoute: typeof PrivacyRoute
+  RetirementRoute: typeof RetirementRoute
   RssDotxmlRoute: typeof RssDotxmlRoute
+  SavingsRoute: typeof SavingsRoute
   SearchRoute: typeof SearchRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
-  ToolsRoute: typeof ToolsRouteWithChildren
+  ToolsRoute: typeof ToolsRoute
   ArticleSlugRoute: typeof ArticleSlugRoute
   CategorySlugRoute: typeof CategorySlugRoute
 }
@@ -305,6 +398,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/savings': {
+      id: '/savings'
+      path: '/savings'
+      fullPath: '/savings'
+      preLoaderRoute: typeof SavingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/rss.xml': {
       id: '/rss.xml'
       path: '/rss.xml'
@@ -312,11 +412,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RssDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/retirement': {
+      id: '/retirement'
+      path: '/retirement'
+      fullPath: '/retirement'
+      preLoaderRoute: typeof RetirementRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/privacy': {
       id: '/privacy'
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/net-worth': {
+      id: '/net-worth'
+      path: '/net-worth'
+      fullPath: '/net-worth'
+      preLoaderRoute: typeof NetWorthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mortgage': {
+      id: '/mortgage'
+      path: '/mortgage'
+      fullPath: '/mortgage'
+      preLoaderRoute: typeof MortgageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/loan': {
+      id: '/loan'
+      path: '/loan'
+      fullPath: '/loan'
+      preLoaderRoute: typeof LoanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/investment': {
+      id: '/investment'
+      path: '/investment'
+      fullPath: '/investment'
+      preLoaderRoute: typeof InvestmentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/inflation': {
+      id: '/inflation'
+      path: '/inflation'
+      fullPath: '/inflation'
+      preLoaderRoute: typeof InflationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/emergency-fund': {
+      id: '/emergency-fund'
+      path: '/emergency-fund'
+      fullPath: '/emergency-fund'
+      preLoaderRoute: typeof EmergencyFundRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/editorial-policy': {
@@ -331,6 +480,13 @@ declare module '@tanstack/react-router' {
       path: '/disclaimer'
       fullPath: '/disclaimer'
       preLoaderRoute: typeof DisclaimerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/credit-card-payoff': {
+      id: '/credit-card-payoff'
+      path: '/credit-card-payoff'
+      fullPath: '/credit-card-payoff'
+      preLoaderRoute: typeof CreditCardPayoffRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cookie-policy': {
@@ -382,20 +538,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/tools/mortgage': {
-      id: '/tools/mortgage'
-      path: '/mortgage'
-      fullPath: '/tools/mortgage'
-      preLoaderRoute: typeof ToolsMortgageRouteImport
-      parentRoute: typeof ToolsRoute
-    }
-    '/tools/loan': {
-      id: '/tools/loan'
-      path: '/loan'
-      fullPath: '/tools/loan'
-      preLoaderRoute: typeof ToolsLoanRouteImport
-      parentRoute: typeof ToolsRoute
-    }
     '/category/$slug': {
       id: '/category/$slug'
       path: '/category/$slug'
@@ -413,18 +555,6 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface ToolsRouteChildren {
-  ToolsLoanRoute: typeof ToolsLoanRoute
-  ToolsMortgageRoute: typeof ToolsMortgageRoute
-}
-
-const ToolsRouteChildren: ToolsRouteChildren = {
-  ToolsLoanRoute: ToolsLoanRoute,
-  ToolsMortgageRoute: ToolsMortgageRoute,
-}
-
-const ToolsRouteWithChildren = ToolsRoute._addFileChildren(ToolsRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
@@ -433,14 +563,23 @@ const rootRouteChildren: RootRouteChildren = {
   CompoundInterestRoute: CompoundInterestRoute,
   ContactRoute: ContactRoute,
   CookiePolicyRoute: CookiePolicyRoute,
+  CreditCardPayoffRoute: CreditCardPayoffRoute,
   DisclaimerRoute: DisclaimerRoute,
   EditorialPolicyRoute: EditorialPolicyRoute,
+  EmergencyFundRoute: EmergencyFundRoute,
+  InflationRoute: InflationRoute,
+  InvestmentRoute: InvestmentRoute,
+  LoanRoute: LoanRoute,
+  MortgageRoute: MortgageRoute,
+  NetWorthRoute: NetWorthRoute,
   PrivacyRoute: PrivacyRoute,
+  RetirementRoute: RetirementRoute,
   RssDotxmlRoute: RssDotxmlRoute,
+  SavingsRoute: SavingsRoute,
   SearchRoute: SearchRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
-  ToolsRoute: ToolsRouteWithChildren,
+  ToolsRoute: ToolsRoute,
   ArticleSlugRoute: ArticleSlugRoute,
   CategorySlugRoute: CategorySlugRoute,
 }

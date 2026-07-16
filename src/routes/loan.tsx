@@ -2,19 +2,20 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 
-export const Route = createFileRoute("/tools/loan")({
+export const Route = createFileRoute("/loan")({
   head: () => ({
     meta: [
       { title: "Loan Calculator — FinanceHub USA" },
       { name: "description", content: "Personal, auto, and student loan calculator. See your monthly payment and total interest cost." },
       { property: "og:title", content: "Loan Calculator — FinanceHub USA" },
-      { property: "og:url", content: "/tools/loan" },
+      { property: "og:url", content: "/loan" },
     ],
-    links: [{ rel: "canonical", href: "/tools/loan" }],
+    links: [{ rel: "canonical", href: "/loan" }],
   }),
   component: LoanPage,
 });
 
+// ... (resto del código igual)
 function LoanPage() {
   const [amount, setAmount] = useState(20000);
   const [rate, setRate] = useState(9.5);

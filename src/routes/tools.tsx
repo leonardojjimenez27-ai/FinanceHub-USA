@@ -20,16 +20,16 @@ export const Route = createFileRoute("/tools")({
 });
 
 const TOOLS = [
-  { slug: "compound-interest", name: "Compound Interest", desc: "See how your money grows over time.", icon: TrendingUp, live: true },
-  { slug: "mortgage", name: "Mortgage", desc: "Estimate your monthly mortgage payment.", icon: Home, live: true },
-  { slug: "loan", name: "Loan", desc: "Personal or auto loan payment calculator.", icon: CreditCard, live: true },
-  { slug: "retirement", name: "Retirement", desc: "How much will you have at retirement?", icon: PiggyBank, live: false },
-  { slug: "savings", name: "Savings", desc: "Reach any savings goal with a plan.", icon: Wallet, live: false },
-  { slug: "investment", name: "Investment", desc: "Project stock and ETF returns.", icon: LineChart, live: false },
-  { slug: "inflation", name: "Inflation", desc: "See how inflation affects buying power.", icon: Percent, live: false },
-  { slug: "net-worth", name: "Net Worth", desc: "Total up assets minus liabilities.", icon: Coins, live: false },
-  { slug: "credit-card-payoff", name: "Credit Card Payoff", desc: "Escape credit card debt fast.", icon: CreditCard, live: false },
-  { slug: "emergency-fund", name: "Emergency Fund", desc: "How much do you really need saved?", icon: ShieldAlert, live: false },
+  { slug: "compound-interest", name: "Compound Interest", desc: "See how your money grows over time.", icon: TrendingUp, live: true, path: "/compound-interest" },
+  { slug: "mortgage", name: "Mortgage", desc: "Estimate your monthly mortgage payment.", icon: Home, live: true, path: "/mortgage" },
+  { slug: "loan", name: "Loan", desc: "Personal or auto loan payment calculator.", icon: CreditCard, live: true, path: "/loan" },
+  { slug: "retirement", name: "Retirement", desc: "How much will you have at retirement?", icon: PiggyBank, live: true, path: "/retirement" },
+  { slug: "savings", name: "Savings", desc: "Reach any savings goal with a plan.", icon: Wallet, live: true, path: "/savings" },
+  { slug: "investment", name: "Investment", desc: "Project stock and ETF returns.", icon: LineChart, live: true, path: "/investment" },
+  { slug: "inflation", name: "Inflation", desc: "See how inflation affects buying power.", icon: Percent, live: true, path: "/inflation" },
+  { slug: "net-worth", name: "Net Worth", desc: "Calculate your total net worth.", icon: Coins, live: true, path: "/net-worth" },
+  { slug: "credit-card-payoff", name: "Credit Card Payoff", desc: "Escape credit card debt fast.", icon: CreditCard, live: true, path: "/credit-card-payoff" },
+  { slug: "emergency-fund", name: "Emergency Fund", desc: "How much do you really need saved?", icon: ShieldAlert, live: true, path: "/emergency-fund" },
 ];
 
 function ToolsIndex() {
@@ -56,20 +56,14 @@ function ToolsIndex() {
               </div>
               <p className="mt-3 flex-1 text-sm text-muted-foreground">{t.desc}</p>
               <p className="mt-4 text-xs font-semibold uppercase tracking-wide">
-                {t.live ? (
-                  <span className="text-accent">Open calculator →</span>
-                ) : (
-                  <span className="text-muted-foreground">Coming soon</span>
-                )}
+                <span className="text-accent">Open calculator →</span>
               </p>
             </div>
           );
-          return t.live ? (
-            <Link key={t.slug} to={`/tools/${t.slug}` as any}>
+          return (
+            <Link key={t.slug} to={t.path as any}>
               {card}
             </Link>
-          ) : (
-            <div key={t.slug}>{card}</div>
           );
         })}
       </div>
