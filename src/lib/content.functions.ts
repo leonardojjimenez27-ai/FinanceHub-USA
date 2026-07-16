@@ -4,9 +4,19 @@ import { z } from "zod";
 import type { Database } from "@/integrations/supabase/types";
 
 function publicClient() {
+  const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+  const key = process.env.SUPABASE_PUBLISHABLE_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+  
+  console.log("🔍 [publicClient] URL:", url);
+  console.log("🔍 [publicClient] KEY existe:", !!key);
+  
+  if (!url || !key) {
+    console.error("❌ [publicClient] Faltan variables de entorno:", { url: !!url, key: !!key });
+  }
+  
   return createClient<Database>(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_PUBLISHABLE_KEY!,
+    url!,
+    key!,
     {
       auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
     },
@@ -19,11 +29,16 @@ const ARTICLE_COLS =
 export const getHomeData = createServerFn({ method: "GET" }).handler(async () => {
   const sb = publicClient();
   const [latest, featured, trending, categories] = await Promise.all([
-    sb.from("articles").select(ARTICLE_COLS).eq("is_published", true)
+    sb.from("articles").select(ARTICLE_COLS)
+      .eq("is_published", true)
       .order("published_at", { ascending: false }).limit(12),
-    sb.from("articles").select(ARTICLE_COLS).eq("is_published", true).eq("featured", true)
+    sb.from("articles").select(ARTICLE_COLS)
+      .eq("is_published", true)
+      .eq("featured", true)
       .order("published_at", { ascending: false }).limit(6),
-    sb.from("articles").select(ARTICLE_COLS).eq("is_published", true).eq("trending", true)
+    sb.from("articles").select(ARTICLE_COLS)
+      .eq("is_published", true)
+      .eq("trending", true)
       .order("view_count", { ascending: false }).limit(6),
     sb.from("categories").select("slug,name,description,seo_description").order("sort_order"),
   ]);
@@ -36,7 +51,7 @@ export const getHomeData = createServerFn({ method: "GET" }).handler(async () =>
 });
 
 export const getCategoryPage = createServerFn({ method: "GET" })
-  .inputValidator((d: { slug: string }) => z.object({ slug: z.string().min(1).max(80) }).parse(d))
+  .validator((d: { slug: string }) => z.object({ slug: z.string().min(1).max(80) }).parse(d))
   .handler(async ({ data }) => {
     const sb = publicClient();
     const { data: category } = await sb.from("categories").select("*").eq("slug", data.slug).maybeSingle();
@@ -52,16 +67,28 @@ export const getCategoryPage = createServerFn({ method: "GET" })
   });
 
 export const getArticleBySlug = createServerFn({ method: "GET" })
-  .inputValidator((d: { slug: string }) => z.object({ slug: z.string().min(1).max(200) }).parse(d))
+  .validator((d: { slug: string }) => z.object({ slug: z.string().min(1).max(200) }).parse(d))
   .handler(async ({ data }) => {
     const sb = publicClient();
-    const { data: article } = await sb
+    
+    console.log("🔍 [getArticleBySlug] Buscando slug:", data.slug);
+    
+    // ✅ Eliminamos la relación con profiles (author_id)
+    const { data: article, error } = await sb
       .from("articles")
-      .select(`*, categories(slug,name), profiles:author_id(display_name,slug,avatar_url,bio,twitter,website)`)
+      .select(`*, categories(slug,name)`)
       .eq("slug", data.slug)
-      .eq("is_published", true)
       .maybeSingle();
+    
+    if (error) {
+      console.error("❌ [getArticleBySlug] Error en la consulta:", error);
+      return { article: null, related: [] as any[] };
+    }
+    
+    console.log("📄 [getArticleBySlug] Artículo encontrado:", article ? article.title : "❌ NULL");
+    
     if (!article) return { article: null, related: [] as any[] };
+    
     const related = article.category_id
       ? (
           await sb
@@ -78,7 +105,7 @@ export const getArticleBySlug = createServerFn({ method: "GET" })
   });
 
 export const searchArticles = createServerFn({ method: "GET" })
-  .inputValidator((d: { q: string }) => z.object({ q: z.string().min(1).max(120) }).parse(d))
+  .validator((d: { q: string }) => z.object({ q: z.string().min(1).max(120) }).parse(d))
   .handler(async ({ data }) => {
     const sb = publicClient();
     const q = data.q.replace(/[%_]/g, "\\$&");
@@ -93,7 +120,7 @@ export const searchArticles = createServerFn({ method: "GET" })
   });
 
 export const subscribeNewsletter = createServerFn({ method: "POST" })
-  .inputValidator((d: { email: string; source?: string }) =>
+  .validator((d: { email: string; source?: string }) =>
     z
       .object({
         email: z.string().trim().email().max(255),
