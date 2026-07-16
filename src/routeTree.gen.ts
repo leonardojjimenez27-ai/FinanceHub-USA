@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ToolsRouteImport } from './routes/tools'
+import { Route as TestRouteImport } from './routes/test'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SearchRouteImport } from './routes/search'
@@ -25,6 +26,7 @@ import { Route as InflationRouteImport } from './routes/inflation'
 import { Route as EmergencyFundRouteImport } from './routes/emergency-fund'
 import { Route as EditorialPolicyRouteImport } from './routes/editorial-policy'
 import { Route as DisclaimerRouteImport } from './routes/disclaimer'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CreditCardPayoffRouteImport } from './routes/credit-card-payoff'
 import { Route as CookiePolicyRouteImport } from './routes/cookie-policy'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -33,12 +35,19 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DashboardStocksRouteImport } from './routes/dashboard.stocks'
+import { Route as DashboardCryptoRouteImport } from './routes/dashboard.crypto'
 import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 import { Route as ArticleSlugRouteImport } from './routes/article.$slug'
 
 const ToolsRoute = ToolsRouteImport.update({
   id: '/tools',
   path: '/tools',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TestRoute = TestRouteImport.update({
+  id: '/test',
+  path: '/test',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TermsRoute = TermsRouteImport.update({
@@ -116,6 +125,11 @@ const DisclaimerRoute = DisclaimerRouteImport.update({
   path: '/disclaimer',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CreditCardPayoffRoute = CreditCardPayoffRouteImport.update({
   id: '/credit-card-payoff',
   path: '/credit-card-payoff',
@@ -156,6 +170,16 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardStocksRoute = DashboardStocksRouteImport.update({
+  id: '/stocks',
+  path: '/stocks',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardCryptoRoute = DashboardCryptoRouteImport.update({
+  id: '/crypto',
+  path: '/crypto',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const CategorySlugRoute = CategorySlugRouteImport.update({
   id: '/category/$slug',
   path: '/category/$slug',
@@ -176,6 +200,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/cookie-policy': typeof CookiePolicyRoute
   '/credit-card-payoff': typeof CreditCardPayoffRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/disclaimer': typeof DisclaimerRoute
   '/editorial-policy': typeof EditorialPolicyRoute
   '/emergency-fund': typeof EmergencyFundRoute
@@ -191,9 +216,12 @@ export interface FileRoutesByFullPath {
   '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/test': typeof TestRoute
   '/tools': typeof ToolsRoute
   '/article/$slug': typeof ArticleSlugRoute
   '/category/$slug': typeof CategorySlugRoute
+  '/dashboard/crypto': typeof DashboardCryptoRoute
+  '/dashboard/stocks': typeof DashboardStocksRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -204,6 +232,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/cookie-policy': typeof CookiePolicyRoute
   '/credit-card-payoff': typeof CreditCardPayoffRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/disclaimer': typeof DisclaimerRoute
   '/editorial-policy': typeof EditorialPolicyRoute
   '/emergency-fund': typeof EmergencyFundRoute
@@ -219,9 +248,12 @@ export interface FileRoutesByTo {
   '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/test': typeof TestRoute
   '/tools': typeof ToolsRoute
   '/article/$slug': typeof ArticleSlugRoute
   '/category/$slug': typeof CategorySlugRoute
+  '/dashboard/crypto': typeof DashboardCryptoRoute
+  '/dashboard/stocks': typeof DashboardStocksRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -233,6 +265,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/cookie-policy': typeof CookiePolicyRoute
   '/credit-card-payoff': typeof CreditCardPayoffRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/disclaimer': typeof DisclaimerRoute
   '/editorial-policy': typeof EditorialPolicyRoute
   '/emergency-fund': typeof EmergencyFundRoute
@@ -248,9 +281,12 @@ export interface FileRoutesById {
   '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/test': typeof TestRoute
   '/tools': typeof ToolsRoute
   '/article/$slug': typeof ArticleSlugRoute
   '/category/$slug': typeof CategorySlugRoute
+  '/dashboard/crypto': typeof DashboardCryptoRoute
+  '/dashboard/stocks': typeof DashboardStocksRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -263,6 +299,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/cookie-policy'
     | '/credit-card-payoff'
+    | '/dashboard'
     | '/disclaimer'
     | '/editorial-policy'
     | '/emergency-fund'
@@ -278,9 +315,12 @@ export interface FileRouteTypes {
     | '/search'
     | '/sitemap.xml'
     | '/terms'
+    | '/test'
     | '/tools'
     | '/article/$slug'
     | '/category/$slug'
+    | '/dashboard/crypto'
+    | '/dashboard/stocks'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -291,6 +331,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/cookie-policy'
     | '/credit-card-payoff'
+    | '/dashboard'
     | '/disclaimer'
     | '/editorial-policy'
     | '/emergency-fund'
@@ -306,9 +347,12 @@ export interface FileRouteTypes {
     | '/search'
     | '/sitemap.xml'
     | '/terms'
+    | '/test'
     | '/tools'
     | '/article/$slug'
     | '/category/$slug'
+    | '/dashboard/crypto'
+    | '/dashboard/stocks'
   id:
     | '__root__'
     | '/'
@@ -319,6 +363,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/cookie-policy'
     | '/credit-card-payoff'
+    | '/dashboard'
     | '/disclaimer'
     | '/editorial-policy'
     | '/emergency-fund'
@@ -334,9 +379,12 @@ export interface FileRouteTypes {
     | '/search'
     | '/sitemap.xml'
     | '/terms'
+    | '/test'
     | '/tools'
     | '/article/$slug'
     | '/category/$slug'
+    | '/dashboard/crypto'
+    | '/dashboard/stocks'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -348,6 +396,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   CookiePolicyRoute: typeof CookiePolicyRoute
   CreditCardPayoffRoute: typeof CreditCardPayoffRoute
+  DashboardRoute: typeof DashboardRouteWithChildren
   DisclaimerRoute: typeof DisclaimerRoute
   EditorialPolicyRoute: typeof EditorialPolicyRoute
   EmergencyFundRoute: typeof EmergencyFundRoute
@@ -363,6 +412,7 @@ export interface RootRouteChildren {
   SearchRoute: typeof SearchRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
+  TestRoute: typeof TestRoute
   ToolsRoute: typeof ToolsRoute
   ArticleSlugRoute: typeof ArticleSlugRoute
   CategorySlugRoute: typeof CategorySlugRoute
@@ -375,6 +425,13 @@ declare module '@tanstack/react-router' {
       path: '/tools'
       fullPath: '/tools'
       preLoaderRoute: typeof ToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/test': {
+      id: '/test'
+      path: '/test'
+      fullPath: '/test'
+      preLoaderRoute: typeof TestRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/terms': {
@@ -482,6 +539,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DisclaimerRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/credit-card-payoff': {
       id: '/credit-card-payoff'
       path: '/credit-card-payoff'
@@ -538,6 +602,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/stocks': {
+      id: '/dashboard/stocks'
+      path: '/stocks'
+      fullPath: '/dashboard/stocks'
+      preLoaderRoute: typeof DashboardStocksRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/crypto': {
+      id: '/dashboard/crypto'
+      path: '/crypto'
+      fullPath: '/dashboard/crypto'
+      preLoaderRoute: typeof DashboardCryptoRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/category/$slug': {
       id: '/category/$slug'
       path: '/category/$slug'
@@ -555,6 +633,20 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface DashboardRouteChildren {
+  DashboardCryptoRoute: typeof DashboardCryptoRoute
+  DashboardStocksRoute: typeof DashboardStocksRoute
+}
+
+const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardCryptoRoute: DashboardCryptoRoute,
+  DashboardStocksRoute: DashboardStocksRoute,
+}
+
+const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
+  DashboardRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
@@ -564,6 +656,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   CookiePolicyRoute: CookiePolicyRoute,
   CreditCardPayoffRoute: CreditCardPayoffRoute,
+  DashboardRoute: DashboardRouteWithChildren,
   DisclaimerRoute: DisclaimerRoute,
   EditorialPolicyRoute: EditorialPolicyRoute,
   EmergencyFundRoute: EmergencyFundRoute,
@@ -579,6 +672,7 @@ const rootRouteChildren: RootRouteChildren = {
   SearchRoute: SearchRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
+  TestRoute: TestRoute,
   ToolsRoute: ToolsRoute,
   ArticleSlugRoute: ArticleSlugRoute,
   CategorySlugRoute: CategorySlugRoute,

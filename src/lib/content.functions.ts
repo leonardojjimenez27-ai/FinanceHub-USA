@@ -73,7 +73,6 @@ export const getArticleBySlug = createServerFn({ method: "GET" })
     
     console.log("🔍 [getArticleBySlug] Buscando slug:", data.slug);
     
-    // ✅ Eliminamos la relación con profiles (author_id)
     const { data: article, error } = await sb
       .from("articles")
       .select(`*, categories(slug,name)`)
@@ -130,13 +129,30 @@ export const subscribeNewsletter = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     const sb = publicClient();
+    
+    // Guardar en la base de datos
     const { error } = await sb
       .from("newsletter_subscribers")
       .insert({ email: data.email.toLowerCase(), source: data.source ?? "site" });
-    if (error && !error.message.includes("duplicate")) {
+    
+    if (error) {
+      if (error.message.includes("duplicate")) {
+        return { ok: false as const, message: "You're already subscribed!" };
+      }
+      console.error("Subscribe error:", error);
       return { ok: false as const, message: "Could not subscribe. Please try again." };
     }
-    return { ok: true as const, message: "Thanks! You're on the list." };
+
+    // ✅ Enviar correo de bienvenida
+    try {
+      const { sendWelcomeEmail } = await import("./email.functions");
+      await sendWelcomeEmail({ data: { email: data.email } });
+    } catch (emailError) {
+      console.error("Error sending welcome email:", emailError);
+      // No fallamos la suscripción si el email falla
+    }
+
+    return { ok: true as const, message: "Thanks! You're on the list. Check your email! 📧" };
   });
 
 export const getSitemapEntries = createServerFn({ method: "GET" }).handler(async () => {
