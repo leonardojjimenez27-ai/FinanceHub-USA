@@ -28,6 +28,12 @@ function DashboardLayout() {
     refetchInterval: 3600000,
   });
 
+  // ✅ Verificar si estamos en el cliente antes de usar window
+  const isClient = typeof window !== "undefined";
+  const isCryptoPage = isClient && window.location.pathname.includes("/dashboard/crypto");
+  const isStocksPage = isClient && window.location.pathname.includes("/dashboard/stocks");
+  const showCryptos = !isCryptoPage && !isStocksPage;
+
   return (
     <div className="container-page py-8">
       <div className="flex items-center justify-between">
@@ -78,7 +84,7 @@ function DashboardLayout() {
       </div>
 
       {/* Mostrar criptos solo en la página principal de dashboard */}
-      {!window.location.pathname.includes("/dashboard/crypto") && !window.location.pathname.includes("/dashboard/stocks") && (
+      {showCryptos && (
         <>
           <h2 className="font-display text-2xl font-bold text-foreground">Top Cryptocurrencies</h2>
           {cryptosLoading ? (

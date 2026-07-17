@@ -3,7 +3,7 @@ import type {} from "@tanstack/react-start";
 import { getSitemapEntries } from "@/lib/content.functions";
 import { CATEGORIES } from "@/lib/categories";
 
-const BASE_URL = "";
+const BASE_URL = "https://tudominio.com";
 
 const STATIC_PATHS = [
   "/",
@@ -19,6 +19,12 @@ const STATIC_PATHS = [
   "/disclaimer",
   "/editorial-policy",
   "/cookie-policy",
+  "/dashboard",
+  "/dashboard/crypto",
+  "/dashboard/stocks",
+  "/etf-screener",
+  "/dividend-screener",
+  "/economic-calendar",
 ];
 
 export const Route = createFileRoute("/sitemap.xml")({

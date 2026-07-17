@@ -87,6 +87,8 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 const SITE_NAME = "FinanceHub USA";
 const SITE_DESC =
   "US financial news, investing guides, market analysis, and personal finance advice from FinanceHub USA — independent, expert-led, and updated daily.";
+const SITE_URL = "https://tudominio.com";
+const SITE_IMAGE = "https://tudominio.com/og-image.jpg";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
@@ -97,12 +99,26 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "description", content: SITE_DESC },
       { name: "author", content: SITE_NAME },
       { name: "theme-color", content: "#0b2545" },
+      
+      // Open Graph (Facebook, LinkedIn)
       { property: "og:site_name", content: SITE_NAME },
       { property: "og:title", content: `${SITE_NAME} — US Financial News & Money Guides` },
       { property: "og:description", content: SITE_DESC },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: SITE_URL },
+      { property: "og:image", content: SITE_IMAGE },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      
+      // Twitter Card
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@FinanceHubUSA" },
+      { name: "twitter:title", content: `${SITE_NAME} — US Financial News & Money Guides` },
+      { name: "twitter:description", content: SITE_DESC },
+      { name: "twitter:image", content: SITE_IMAGE },
+      
+      // Keywords adicionales
+      { name: "keywords", content: "US financial news, investing, stocks, crypto, personal finance, retirement, taxes, credit cards, loans, insurance, banking, saving money, budgeting, business, economy, financial education" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -111,30 +127,40 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap",
       },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "canonical", href: SITE_URL },
+      { rel: "alternate", type: "application/rss+xml", title: "FinanceHub USA RSS Feed", href: "/rss.xml" },
     ],
     scripts: [
+      // Schema.org - WebSite
       {
         type: "application/ld+json",
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "WebSite",
           name: SITE_NAME,
-          url: "/",
+          url: SITE_URL,
+          description: SITE_DESC,
           potentialAction: {
             "@type": "SearchAction",
-            target: "/search?q={search_term_string}",
+            target: `${SITE_URL}/search?q={search_term_string}`,
             "query-input": "required name=search_term_string",
           },
         }),
       },
+      // Schema.org - Organization
       {
         type: "application/ld+json",
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Organization",
           name: SITE_NAME,
-          url: "/",
+          url: SITE_URL,
           slogan: "Master your money.",
+          sameAs: [
+            "https://twitter.com/FinanceHubUSA",
+            "https://facebook.com/FinanceHubUSA",
+            "https://linkedin.com/company/financehubusa",
+          ],
         }),
       },
     ],
@@ -150,6 +176,25 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
+        {/* Preconnect para fuentes y APIs */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://images.unsplash.com" />
+        
+        {/* DNS Prefetch */}
+        <link rel="dns-prefetch" href="https://api.coingecko.com" />
+        <link rel="dns-prefetch" href="https://www.alphavantage.co" />
+        
+        {/* Breadcrumbs Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              { "@type": "ListItem", "position": 1, "name": "Home", "item": "/" }
+            ]
+          })}
+        </script>
       </head>
       <body>
         {children}

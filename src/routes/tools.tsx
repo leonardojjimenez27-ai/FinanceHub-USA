@@ -1,5 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Calculator, TrendingUp, Home, CreditCard, PiggyBank, LineChart, Percent, Wallet, Coins, ShieldAlert, LayoutDashboard, BarChart3, Bitcoin } from "lucide-react";
+import { 
+  Calculator, TrendingUp, Home, CreditCard, PiggyBank, LineChart, 
+  Percent, Wallet, Coins, ShieldAlert, LayoutDashboard, BarChart3, 
+  Bitcoin, Calendar, TrendingDown, DollarSign 
+} from "lucide-react";
 
 export const Route = createFileRoute("/tools")({
   head: () => ({
@@ -8,10 +12,10 @@ export const Route = createFileRoute("/tools")({
       {
         name: "description",
         content:
-          "Free US financial calculators: compound interest, mortgage, loan, retirement, savings, investment, inflation, net worth, credit card payoff, and emergency fund.",
+          "Free US financial calculators, market dashboards, and investment tools: compound interest, mortgage, loan, retirement, savings, investment, inflation, net worth, credit card payoff, emergency fund, ETF screener, dividend screener, and economic calendar.",
       },
-      { property: "og:title", content: "Free Financial Calculators — FinanceHub USA" },
-      { property: "og:description", content: "10 free calculators to help you plan, save, and invest smarter." },
+      { property: "og:title", content: "Free Financial Tools — FinanceHub USA" },
+      { property: "og:description", content: "10+ free calculators and market tools to help you plan, save, and invest smarter." },
       { property: "og:url", content: "/tools" },
     ],
     links: [{ rel: "canonical", href: "/tools" }],
@@ -36,6 +40,9 @@ const DASHBOARDS = [
   { slug: "dashboard", name: "Market Dashboard", desc: "Real-time crypto and market data.", icon: LayoutDashboard, path: "/dashboard" },
   { slug: "dashboard/crypto", name: "Crypto Dashboard", desc: "Top cryptocurrencies live prices.", icon: Bitcoin, path: "/dashboard/crypto" },
   { slug: "dashboard/stocks", name: "Stock Dashboard", desc: "Search and track US stocks.", icon: BarChart3, path: "/dashboard/stocks" },
+  { slug: "etf-screener", name: "ETF Screener", desc: "Search and track ETFs.", icon: TrendingUp, path: "/etf-screener" },
+  { slug: "dividend-screener", name: "Dividend Screener", desc: "Find high dividend stocks.", icon: DollarSign, path: "/dividend-screener" },
+  { slug: "economic-calendar", name: "Economic Calendar", desc: "Key economic events.", icon: Calendar, path: "/economic-calendar" },
 ];
 
 function ToolsIndex() {

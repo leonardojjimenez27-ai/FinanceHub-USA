@@ -23,8 +23,11 @@ import { Route as MortgageRouteImport } from './routes/mortgage'
 import { Route as LoanRouteImport } from './routes/loan'
 import { Route as InvestmentRouteImport } from './routes/investment'
 import { Route as InflationRouteImport } from './routes/inflation'
+import { Route as EtfScreenerRouteImport } from './routes/etf-screener'
 import { Route as EmergencyFundRouteImport } from './routes/emergency-fund'
 import { Route as EditorialPolicyRouteImport } from './routes/editorial-policy'
+import { Route as EconomicCalendarRouteImport } from './routes/economic-calendar'
+import { Route as DividendScreenerRouteImport } from './routes/dividend-screener'
 import { Route as DisclaimerRouteImport } from './routes/disclaimer'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CreditCardPayoffRouteImport } from './routes/credit-card-payoff'
@@ -110,6 +113,11 @@ const InflationRoute = InflationRouteImport.update({
   path: '/inflation',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EtfScreenerRoute = EtfScreenerRouteImport.update({
+  id: '/etf-screener',
+  path: '/etf-screener',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EmergencyFundRoute = EmergencyFundRouteImport.update({
   id: '/emergency-fund',
   path: '/emergency-fund',
@@ -118,6 +126,16 @@ const EmergencyFundRoute = EmergencyFundRouteImport.update({
 const EditorialPolicyRoute = EditorialPolicyRouteImport.update({
   id: '/editorial-policy',
   path: '/editorial-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EconomicCalendarRoute = EconomicCalendarRouteImport.update({
+  id: '/economic-calendar',
+  path: '/economic-calendar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DividendScreenerRoute = DividendScreenerRouteImport.update({
+  id: '/dividend-screener',
+  path: '/dividend-screener',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DisclaimerRoute = DisclaimerRouteImport.update({
@@ -202,8 +220,11 @@ export interface FileRoutesByFullPath {
   '/credit-card-payoff': typeof CreditCardPayoffRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/disclaimer': typeof DisclaimerRoute
+  '/dividend-screener': typeof DividendScreenerRoute
+  '/economic-calendar': typeof EconomicCalendarRoute
   '/editorial-policy': typeof EditorialPolicyRoute
   '/emergency-fund': typeof EmergencyFundRoute
+  '/etf-screener': typeof EtfScreenerRoute
   '/inflation': typeof InflationRoute
   '/investment': typeof InvestmentRoute
   '/loan': typeof LoanRoute
@@ -234,8 +255,11 @@ export interface FileRoutesByTo {
   '/credit-card-payoff': typeof CreditCardPayoffRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/disclaimer': typeof DisclaimerRoute
+  '/dividend-screener': typeof DividendScreenerRoute
+  '/economic-calendar': typeof EconomicCalendarRoute
   '/editorial-policy': typeof EditorialPolicyRoute
   '/emergency-fund': typeof EmergencyFundRoute
+  '/etf-screener': typeof EtfScreenerRoute
   '/inflation': typeof InflationRoute
   '/investment': typeof InvestmentRoute
   '/loan': typeof LoanRoute
@@ -267,8 +291,11 @@ export interface FileRoutesById {
   '/credit-card-payoff': typeof CreditCardPayoffRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/disclaimer': typeof DisclaimerRoute
+  '/dividend-screener': typeof DividendScreenerRoute
+  '/economic-calendar': typeof EconomicCalendarRoute
   '/editorial-policy': typeof EditorialPolicyRoute
   '/emergency-fund': typeof EmergencyFundRoute
+  '/etf-screener': typeof EtfScreenerRoute
   '/inflation': typeof InflationRoute
   '/investment': typeof InvestmentRoute
   '/loan': typeof LoanRoute
@@ -301,8 +328,11 @@ export interface FileRouteTypes {
     | '/credit-card-payoff'
     | '/dashboard'
     | '/disclaimer'
+    | '/dividend-screener'
+    | '/economic-calendar'
     | '/editorial-policy'
     | '/emergency-fund'
+    | '/etf-screener'
     | '/inflation'
     | '/investment'
     | '/loan'
@@ -333,8 +363,11 @@ export interface FileRouteTypes {
     | '/credit-card-payoff'
     | '/dashboard'
     | '/disclaimer'
+    | '/dividend-screener'
+    | '/economic-calendar'
     | '/editorial-policy'
     | '/emergency-fund'
+    | '/etf-screener'
     | '/inflation'
     | '/investment'
     | '/loan'
@@ -365,8 +398,11 @@ export interface FileRouteTypes {
     | '/credit-card-payoff'
     | '/dashboard'
     | '/disclaimer'
+    | '/dividend-screener'
+    | '/economic-calendar'
     | '/editorial-policy'
     | '/emergency-fund'
+    | '/etf-screener'
     | '/inflation'
     | '/investment'
     | '/loan'
@@ -398,8 +434,11 @@ export interface RootRouteChildren {
   CreditCardPayoffRoute: typeof CreditCardPayoffRoute
   DashboardRoute: typeof DashboardRouteWithChildren
   DisclaimerRoute: typeof DisclaimerRoute
+  DividendScreenerRoute: typeof DividendScreenerRoute
+  EconomicCalendarRoute: typeof EconomicCalendarRoute
   EditorialPolicyRoute: typeof EditorialPolicyRoute
   EmergencyFundRoute: typeof EmergencyFundRoute
+  EtfScreenerRoute: typeof EtfScreenerRoute
   InflationRoute: typeof InflationRoute
   InvestmentRoute: typeof InvestmentRoute
   LoanRoute: typeof LoanRoute
@@ -518,6 +557,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InflationRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/etf-screener': {
+      id: '/etf-screener'
+      path: '/etf-screener'
+      fullPath: '/etf-screener'
+      preLoaderRoute: typeof EtfScreenerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/emergency-fund': {
       id: '/emergency-fund'
       path: '/emergency-fund'
@@ -530,6 +576,20 @@ declare module '@tanstack/react-router' {
       path: '/editorial-policy'
       fullPath: '/editorial-policy'
       preLoaderRoute: typeof EditorialPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/economic-calendar': {
+      id: '/economic-calendar'
+      path: '/economic-calendar'
+      fullPath: '/economic-calendar'
+      preLoaderRoute: typeof EconomicCalendarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dividend-screener': {
+      id: '/dividend-screener'
+      path: '/dividend-screener'
+      fullPath: '/dividend-screener'
+      preLoaderRoute: typeof DividendScreenerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/disclaimer': {
@@ -658,8 +718,11 @@ const rootRouteChildren: RootRouteChildren = {
   CreditCardPayoffRoute: CreditCardPayoffRoute,
   DashboardRoute: DashboardRouteWithChildren,
   DisclaimerRoute: DisclaimerRoute,
+  DividendScreenerRoute: DividendScreenerRoute,
+  EconomicCalendarRoute: EconomicCalendarRoute,
   EditorialPolicyRoute: EditorialPolicyRoute,
   EmergencyFundRoute: EmergencyFundRoute,
+  EtfScreenerRoute: EtfScreenerRoute,
   InflationRoute: InflationRoute,
   InvestmentRoute: InvestmentRoute,
   LoanRoute: LoanRoute,

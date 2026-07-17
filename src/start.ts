@@ -1,6 +1,5 @@
-import { createStart, createMiddleware } from "@tanstack/react-start";
+import { createStart, createMiddleware, createCsrfMiddleware } from "@tanstack/react-start";
 import { renderErrorPage } from "./lib/error-page";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const errorMiddleware = createMiddleware().server(async ({ next }) => {
   try {
@@ -17,7 +16,12 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
   }
 });
 
+// ✅ Middleware CSRF para proteger server functions
+const csrfMiddleware = createCsrfMiddleware({
+  filter: (ctx) => ctx.handlerType === 'serverFn',
+});
+
 export const startInstance = createStart(() => ({
-  functionMiddleware: [], // ✅ No usamos middleware global para evitar conflictos
-  requestMiddleware: [errorMiddleware],
+  functionMiddleware: [],
+  requestMiddleware: [csrfMiddleware, errorMiddleware],
 }));

@@ -1,7 +1,11 @@
+# robots.txt for FinanceHub USA
 User-agent: *
 Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /auth/
+Disallow: /newsletter/
+Disallow: /search?
 
-Disallow: /admin
-Disallow: /_authenticated/
-Disallow: /auth
-Disallow: /search
+# Crawl delay para no sobrecargar el servidor
+Crawl-delay: 1
