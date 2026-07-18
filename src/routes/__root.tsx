@@ -87,8 +87,8 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 const SITE_NAME = "FinanceHub USA";
 const SITE_DESC =
   "US financial news, investing guides, market analysis, and personal finance advice from FinanceHub USA — independent, expert-led, and updated daily.";
-const SITE_URL = "https://tudominio.com";
-const SITE_IMAGE = "https://tudominio.com/og-image.jpg";
+const SITE_URL = "https://financehubus.com";
+const SITE_IMAGE = "https://financehubus.com/og-image.jpg";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
@@ -176,16 +176,26 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
-        {/* Preconnect para fuentes y APIs */}
+        
+        {/* Google Analytics */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-QLVFC6V3SG"></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-QLVFC6V3SG');
+            `,
+          }}
+        />
+        
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://images.unsplash.com" />
-        
-        {/* DNS Prefetch */}
         <link rel="dns-prefetch" href="https://api.coingecko.com" />
         <link rel="dns-prefetch" href="https://www.alphavantage.co" />
         
-        {/* Breadcrumbs Schema */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
