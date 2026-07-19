@@ -216,3 +216,10 @@
     font-size: 0.9em;
   }
 }
+
+@layer utilities {
+  .prose-article img {
+    @apply rounded-lg my-6 w-full;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+}

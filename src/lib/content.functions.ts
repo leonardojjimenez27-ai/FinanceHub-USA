@@ -73,9 +73,13 @@ export const getArticleBySlug = createServerFn({ method: "GET" })
     
     console.log("🔍 [getArticleBySlug] Buscando slug:", data.slug);
     
+    // ✅ Eliminamos la relación con profiles (author_id)
     const { data: article, error } = await sb
       .from("articles")
-      .select(`*, categories(slug,name)`)
+      .select(`
+        *,
+        categories(slug,name)
+      `)
       .eq("slug", data.slug)
       .maybeSingle();
     
@@ -130,7 +134,6 @@ export const subscribeNewsletter = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const sb = publicClient();
     
-    // Guardar en la base de datos
     const { error } = await sb
       .from("newsletter_subscribers")
       .insert({ email: data.email.toLowerCase(), source: data.source ?? "site" });
@@ -143,13 +146,11 @@ export const subscribeNewsletter = createServerFn({ method: "POST" })
       return { ok: false as const, message: "Could not subscribe. Please try again." };
     }
 
-    // ✅ Enviar correo de bienvenida
     try {
       const { sendWelcomeEmail } = await import("./email.functions");
       await sendWelcomeEmail({ data: { email: data.email } });
     } catch (emailError) {
       console.error("Error sending welcome email:", emailError);
-      // No fallamos la suscripción si el email falla
     }
 
     return { ok: true as const, message: "Thanks! You're on the list. Check your email! 📧" };

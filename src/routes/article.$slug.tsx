@@ -15,6 +15,7 @@ const opts = (slug: string) =>
   });
 
 export const Route = createFileRoute("/article/$slug")({
+  ssr: false,
   loader: async ({ params, context }) => {
     const data = await context.queryClient.ensureQueryData(opts(params.slug));
     if (!data.article) throw notFound();
@@ -167,9 +168,8 @@ function ArticlePage() {
             <p className="mt-4 text-lg text-muted-foreground">{article.excerpt}</p>
           )}
           <div className="mt-5 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
-            {article.profiles?.display_name && (
-              <span>By {article.profiles.display_name}</span>
-            )}
+            {/* ✅ Autor dinámico */}
+            <span>By {article.author_name || "FinanceHub Team"}</span>
             {article.published_at && (
               <span className="flex items-center gap-1">
                 <Calendar className="h-3 w-3" />
