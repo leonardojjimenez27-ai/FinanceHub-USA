@@ -3,7 +3,7 @@ import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { getArticleBySlug } from "@/lib/content.functions";
 import { ArticleCard } from "@/components/site/ArticleCard";
 import { Breadcrumbs, breadcrumbJsonLd } from "@/components/site/Breadcrumbs";
-import { AdSlot } from "@/components/site/AdSlot";
+// import { AdSlot } from "@/components/site/AdSlot"; // ❌ Comentado temporalmente
 import { NewsletterForm } from "@/components/site/NewsletterForm";
 import { Facebook, Linkedin, Twitter, Link as LinkIcon, Clock, Calendar } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -168,7 +168,6 @@ function ArticlePage() {
             <p className="mt-4 text-lg text-muted-foreground">{article.excerpt}</p>
           )}
           <div className="mt-5 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
-            {/* ✅ Autor dinámico */}
             <span>By {article.author_name || "FinanceHub Team"}</span>
             {article.published_at && (
               <span className="flex items-center gap-1">
@@ -250,7 +249,8 @@ function ArticlePage() {
               </section>
             )}
 
-            <AdSlot slot="inline" className="my-10" />
+            {/* ❌ Bloque de anuncios inline eliminado temporalmente */}
+            {/* <AdSlot slot="inline" className="my-10" /> */}
 
             {article.profiles && (
               <aside className="mt-10 flex gap-4 rounded-lg border border-border bg-card p-5">
@@ -317,7 +317,8 @@ function ArticlePage() {
               </div>
             </div>
 
-            <AdSlot slot="sidebar" />
+            {/* ❌ Bloque de anuncios sidebar eliminado temporalmente */}
+            {/* <AdSlot slot="sidebar" /> */}
           </aside>
         </div>
       </article>
