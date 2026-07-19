@@ -28,13 +28,13 @@ function Contact() {
         <div className="rounded-lg border border-border p-5">
           <h3 className="font-display text-lg font-bold">General & editorial</h3>
           <p className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
-            <Mail className="h-4 w-4" /> editors@financehubusa.example
+            <Mail className="h-4 w-4" /> admin@financehubus.com
           </p>
         </div>
         <div className="rounded-lg border border-border p-5">
           <h3 className="font-display text-lg font-bold">Advertising & partnerships</h3>
           <p className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
-            <Mail className="h-4 w-4" /> partners@financehubusa.example
+            <Mail className="h-4 w-4" /> admin@financehubus.com
           </p>
         </div>
       </div>
@@ -54,7 +54,7 @@ function Contact() {
         ) : (
           <>
             <input required placeholder="Your name" maxLength={80} className="rounded-md border border-input bg-background px-3 py-2 text-sm outline-none" />
-            <input required type="email" placeholder="Your email" maxLength={200} className="rounded-md border border-input bg-background px-3 py-2 text-sm outline-none" />
+            <input required type="email" placeholder="admin@financehubus.com" maxLength={200} className="rounded-md border border-input bg-background px-3 py-2 text-sm outline-none" />
             <input required placeholder="Subject" maxLength={120} className="rounded-md border border-input bg-background px-3 py-2 text-sm outline-none" />
             <textarea required rows={5} placeholder="Your message" maxLength={2000} className="rounded-md border border-input bg-background px-3 py-2 text-sm outline-none" />
             <button className="justify-self-start rounded-md bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary-hover">
