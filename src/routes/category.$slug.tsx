@@ -3,7 +3,7 @@ import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { getCategoryPage } from "@/lib/content.functions";
 import { ArticleCard } from "@/components/site/ArticleCard";
 import { Breadcrumbs, breadcrumbJsonLd } from "@/components/site/Breadcrumbs";
-import { AdSlot } from "@/components/site/AdSlot";
+// import { AdSlot } from "@/components/site/AdSlot"; // ❌ Comentado temporalmente
 import { NewsletterForm } from "@/components/site/NewsletterForm";
 import { CATEGORIES } from "@/lib/categories";
 
@@ -81,7 +81,8 @@ function CategoryPage() {
         )}
       </header>
 
-      <AdSlot slot="leaderboard" className="my-8" />
+      {/* ❌ Bloque de anuncios comentado temporalmente */}
+      {/* <AdSlot slot="leaderboard" className="my-8" /> */}
 
       {articles.length ? (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
