@@ -5,7 +5,7 @@ import { TrendingUp, TrendingDown, ArrowRight, Sparkles } from "lucide-react";
 import { getHomeData } from "@/lib/content.functions";
 import { ArticleCard } from "@/components/site/ArticleCard";
 import { NewsletterForm } from "@/components/site/NewsletterForm";
-import { AdSlot } from "@/components/site/AdSlot";
+// import { AdSlot } from "@/components/site/AdSlot"; // ❌ Comentado temporalmente
 import { CATEGORIES } from "@/lib/categories";
 
 const homeOptions = () =>
@@ -85,7 +85,8 @@ function HomePage() {
         )}
       </section>
 
-      <AdSlot slot="leaderboard" className="container-page mb-8" />
+      {/* ❌ Bloque de anuncios comentado temporalmente */}
+      {/* <AdSlot slot="leaderboard" className="container-page mb-8" /> */}
 
       {/* Latest news */}
       <section className="container-page">
@@ -134,25 +135,25 @@ function HomePage() {
       </section>
 
       {/* Market overview + crypto side by side */}
-<section className="container-page mt-14 grid gap-6 lg:grid-cols-2">
-  <MarketPanel
-    title="US Stock Market"
-    items={MARKET_SNAPSHOT.slice(0, 4)}
-    href="/dashboard/stocks"
-  />
-  <MarketPanel
-    title="Crypto Market"
-    items={[
-      { name: "Bitcoin (BTC)", value: "$97,412", change: "+1.24%", up: true },
-      { name: "Ethereum (ETH)", value: "$3,485", change: "+0.83%", up: true },
-      { name: "Solana (SOL)", value: "$212.40", change: "+2.11%", up: true },
-      { name: "BNB", value: "$641.20", change: "-0.42%", up: false },
-      { name: "XRP", value: "$1.32", change: "+0.90%", up: true },
-      { name: "Dogecoin (DOGE)", value: "$0.362", change: "-1.31%", up: false },
-    ]}
-    href="/dashboard/crypto"
-  />
-</section>
+      <section className="container-page mt-14 grid gap-6 lg:grid-cols-2">
+        <MarketPanel
+          title="US Stock Market"
+          items={MARKET_SNAPSHOT.slice(0, 4)}
+          href="/dashboard/stocks"
+        />
+        <MarketPanel
+          title="Crypto Market"
+          items={[
+            { name: "Bitcoin (BTC)", value: "$97,412", change: "+1.24%", up: true },
+            { name: "Ethereum (ETH)", value: "$3,485", change: "+0.83%", up: true },
+            { name: "Solana (SOL)", value: "$212.40", change: "+2.11%", up: true },
+            { name: "BNB", value: "$641.20", change: "-0.42%", up: false },
+            { name: "XRP", value: "$1.32", change: "+0.90%", up: true },
+            { name: "Dogecoin (DOGE)", value: "$0.362", change: "-1.31%", up: false },
+          ]}
+          href="/dashboard/crypto"
+        />
+      </section>
 
       {/* Trending + popular sidebar-style block */}
       {trending.length > 0 && (
