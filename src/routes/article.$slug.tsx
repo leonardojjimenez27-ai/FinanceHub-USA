@@ -118,16 +118,6 @@ function ArticlePage() {
   const related = data.related;
 
   const toc = useMemo(() => extractHeadings(article.content || ""), [article.content]);
-  const [progress, setProgress] = useState(0);
-  useEffect(() => {
-    const onScroll = () => {
-      const h = document.documentElement;
-      const total = h.scrollHeight - h.clientHeight;
-      setProgress(total > 0 ? Math.min(1, h.scrollTop / total) : 0);
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   const shareUrl =
     typeof window !== "undefined" ? window.location.href : `/article/${slug}`;
@@ -135,12 +125,6 @@ function ArticlePage() {
 
   return (
     <div>
-      <div
-        aria-hidden
-        className="fixed left-0 top-14 z-30 h-0.5 bg-accent transition-[width]"
-        style={{ width: `${progress * 100}%` }}
-      />
-
       <article className="container-page py-8">
         <Breadcrumbs
           items={[
