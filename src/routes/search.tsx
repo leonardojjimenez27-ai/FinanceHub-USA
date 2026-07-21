@@ -16,7 +16,7 @@ export const Route = createFileRoute("/search")({
     meta: [
       { title: "Search — FinanceHub USA" },
       { name: "description", content: "Search FinanceHub USA articles, guides, and analysis." },
-      { name: "robots", content: "noindex,follow" },
+      { name: "robots", content: "index, follow" },
     ],
   }),
   component: SearchPage,

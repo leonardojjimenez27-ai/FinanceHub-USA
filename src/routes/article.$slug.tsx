@@ -25,7 +25,7 @@ export const Route = createFileRoute("/article/$slug")({
     const a: any = loaderData?.article;
     if (!a) {
       return {
-        meta: [{ title: "Article not found" }, { name: "robots", content: "noindex" }],
+        meta: [{ title: "Article not found" }, { name: "robots", content: "index, follow" }],
       };
     }
     const url = `/article/${params.slug}`;
