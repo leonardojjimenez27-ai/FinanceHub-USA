@@ -3,7 +3,7 @@ import type {} from "@tanstack/react-start";
 import { getSitemapEntries } from "@/lib/content.functions";
 import { CATEGORIES } from "@/lib/categories";
 
-const BASE_URL = "https://tudominio.com";
+const BASE_URL = "https://www.financehubus.com";
 
 const STATIC_PATHS = [
   "/",
