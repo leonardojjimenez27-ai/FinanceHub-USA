@@ -73,12 +73,21 @@ export const getArticleBySlug = createServerFn({ method: "GET" })
     
     console.log("🔍 [getArticleBySlug] Buscando slug:", data.slug);
     
-    // ✅ Eliminamos la relación con profiles (author_id)
+    // ✅ Incluimos la relación con profiles para obtener los datos del autor
     const { data: article, error } = await sb
       .from("articles")
       .select(`
         *,
-        categories(slug,name)
+        categories(slug,name),
+        profiles(
+          id,
+          display_name,
+          bio,
+          avatar_url,
+          twitter,
+          website,
+          slug
+        )
       `)
       .eq("slug", data.slug)
       .maybeSingle();

@@ -56,8 +56,6 @@ function AuthPage() {
     }
   }
 
-  // Eliminamos la función google() porque usará solo email/password
-
   return (
     <div className="container-page grid min-h-[70vh] place-items-center py-12">
       <div className="w-full max-w-md rounded-2xl border border-border bg-card p-8 shadow-[var(--shadow-elegant)]">
@@ -102,6 +100,7 @@ function AuthPage() {
               value={email}
               required
               onChange={(e) => setEmail(e.target.value)}
+              placeholder="admin@financehubus.com"
               className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/30"
               autoComplete="email"
             />

@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Search, Menu, Moon, Sun, TrendingUp, User, X } from "lucide-react";
+import { Search, Menu, Moon, Sun, TrendingUp, User, X, UserCircle } from "lucide-react";
 import { PRIMARY_NAV, CATEGORIES } from "@/lib/categories";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -80,6 +80,13 @@ export function SiteHeader() {
           >
             Tools
           </Link>
+          {/* ✅ Enlace a la página de autor */}
+          <Link
+            to="/author/leonardo-jimenez"
+            className="rounded-md px-3 py-1.5 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+          >
+            Author
+          </Link>
         </nav>
 
         <div className="ml-auto flex items-center gap-1">
@@ -98,20 +105,39 @@ export function SiteHeader() {
             {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
           {userId ? (
-            <Link
-              to="/admin"
-              className="rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
-              aria-label="Account"
-            >
-              <User className="h-4 w-4" />
-            </Link>
+            <div className="flex items-center gap-1">
+              <Link
+                to="/admin"
+                className="rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
+                aria-label="Account"
+              >
+                <User className="h-4 w-4" />
+              </Link>
+              {/* ✅ Enlace a la página de autor (versión icono) */}
+              <Link
+                to="/author/leonardo-jimenez"
+                className="rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
+                aria-label="Author"
+              >
+                <UserCircle className="h-4 w-4" />
+              </Link>
+            </div>
           ) : (
-            <Link
-              to="/auth"
-              className="hidden sm:inline-flex items-center rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary-hover"
-            >
-              Sign in
-            </Link>
+            <>
+              <Link
+                to="/auth"
+                className="hidden sm:inline-flex items-center rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary-hover"
+              >
+                Sign in
+              </Link>
+              {/* ✅ Enlace a la página de autor para usuarios no logueados */}
+              <Link
+                to="/author/leonardo-jimenez"
+                className="hidden sm:inline-flex items-center gap-1 rounded-md border border-input px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+              >
+                <UserCircle className="h-4 w-4" /> Author
+              </Link>
+            </>
           )}
         </div>
       </div>
@@ -156,6 +182,14 @@ export function SiteHeader() {
             ))}
             <Link to="/tools" onClick={() => setOpen(false)} className="rounded-md px-3 py-2 text-muted-foreground hover:bg-muted hover:text-foreground">
               Tools
+            </Link>
+            {/* ✅ Enlace a la página de autor en el menú móvil */}
+            <Link
+              to="/author/leonardo-jimenez"
+              onClick={() => setOpen(false)}
+              className="rounded-md px-3 py-2 text-muted-foreground hover:bg-muted hover:text-foreground"
+            >
+              Author
             </Link>
           </nav>
         </div>

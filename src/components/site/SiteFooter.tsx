@@ -52,6 +52,10 @@ export function SiteFooter() {
         <div className="mt-10 flex flex-col gap-4 border-t border-border pt-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <p>© {year} FinanceHub USA. All rights reserved.</p>
           <nav className="flex flex-wrap gap-4">
+            {/* ✅ Enlace a la página de autor */}
+            <Link to="/author/leonardo-jimenez" className="hover:text-foreground">
+              Author
+            </Link>
             <Link to="/about" className="hover:text-foreground">About</Link>
             <Link to="/contact" className="hover:text-foreground">Contact</Link>
             <Link to="/editorial-policy" className="hover:text-foreground">Editorial</Link>

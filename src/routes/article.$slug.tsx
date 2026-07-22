@@ -236,28 +236,43 @@ function ArticlePage() {
             {/* ❌ Bloque de anuncios inline eliminado temporalmente */}
             {/* <AdSlot slot="inline" className="my-10" /> */}
 
+            {/* ✅ Author bio - Con enlace a página de autor */}
             {article.profiles && (
               <aside className="mt-10 flex gap-4 rounded-lg border border-border bg-card p-5">
-                {article.profiles.avatar_url ? (
-                  <img
-                    src={article.profiles.avatar_url}
-                    alt=""
-                    className="h-14 w-14 flex-none rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="grid h-14 w-14 flex-none place-items-center rounded-full bg-primary font-bold text-primary-foreground">
-                    {article.profiles.display_name?.[0] ?? "A"}
-                  </div>
-                )}
+                {/* Avatar con enlace */}
+                <Link
+                  to="/author/$slug"
+                  params={{ slug: article.profiles.slug || 'leonardo-jimenez' }}
+                  className="flex-none"
+                >
+                  {article.profiles.avatar_url ? (
+                    <img
+                      src={article.profiles.avatar_url}
+                      alt={article.profiles.display_name || "Author"}
+                      className="h-14 w-14 rounded-full object-cover transition hover:opacity-80"
+                    />
+                  ) : (
+                    <div className="grid h-14 w-14 place-items-center rounded-full bg-primary font-bold text-primary-foreground">
+                      {article.profiles.display_name?.[0] ?? "A"}
+                    </div>
+                  )}
+                </Link>
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-wide text-accent">
                     Written by
                   </p>
-                  <p className="text-lg font-display font-bold text-foreground">
-                    {article.profiles.display_name}
-                  </p>
+                  {/* Nombre del autor con enlace */}
+                  <Link
+                    to="/author/$slug"
+                    params={{ slug: article.profiles.slug || 'leonardo-jimenez' }}
+                    className="text-lg font-display font-bold text-foreground hover:text-accent transition"
+                  >
+                    {article.profiles.display_name || "Leonardo Jiménez"}
+                  </Link>
                   {article.profiles.bio && (
-                    <p className="mt-1 text-sm text-muted-foreground">{article.profiles.bio}</p>
+                    <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
+                      {article.profiles.bio}
+                    </p>
                   )}
                 </div>
               </aside>
