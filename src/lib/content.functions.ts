@@ -73,21 +73,12 @@ export const getArticleBySlug = createServerFn({ method: "GET" })
     
     console.log("🔍 [getArticleBySlug] Buscando slug:", data.slug);
     
-    // ✅ Incluimos la relación con profiles para obtener los datos del autor
+    // ✅ Primero obtenemos el artículo con su categoría
     const { data: article, error } = await sb
       .from("articles")
       .select(`
         *,
-        categories(slug,name),
-        profiles(
-          id,
-          display_name,
-          bio,
-          avatar_url,
-          twitter,
-          website,
-          slug
-        )
+        categories(slug,name)
       `)
       .eq("slug", data.slug)
       .maybeSingle();
@@ -101,6 +92,29 @@ export const getArticleBySlug = createServerFn({ method: "GET" })
     
     if (!article) return { article: null, related: [] as any[] };
     
+    // ✅ Si tiene author_id, obtenemos los datos del autor por separado
+    if (article.author_id) {
+      const { data: profile, error: profileError } = await sb
+        .from("profiles")
+        .select("id, display_name, bio, avatar_url, twitter, website, slug")
+        .eq("id", article.author_id)
+        .maybeSingle();
+      
+      if (profileError) {
+        console.error("❌ [getArticleBySlug] Error obteniendo perfil del autor:", profileError);
+      }
+      
+      if (profile) {
+        article.profiles = profile;
+        console.log("👤 [getArticleBySlug] Autor encontrado:", profile.display_name);
+      } else {
+        console.log("⚠️ [getArticleBySlug] No se encontró perfil para author_id:", article.author_id);
+      }
+    } else {
+      console.log("⚠️ [getArticleBySlug] El artículo no tiene author_id");
+    }
+    
+    // ✅ Obtenemos artículos relacionados
     const related = article.category_id
       ? (
           await sb
@@ -113,6 +127,7 @@ export const getArticleBySlug = createServerFn({ method: "GET" })
             .limit(4)
         ).data ?? []
       : [];
+    
     return { article, related };
   });
 
