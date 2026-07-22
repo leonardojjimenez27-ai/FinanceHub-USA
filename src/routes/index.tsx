@@ -42,27 +42,51 @@ function HomePage() {
 
   return (
     <>
-      {/* Market ticker */}
-      <div className="border-b border-border bg-primary text-primary-foreground">
-        <div className="container-page flex items-center gap-6 overflow-x-auto py-2 text-xs font-medium">
-          {MARKET_SNAPSHOT.map((m) => (
-            <div key={m.name} className="flex flex-none items-center gap-2">
-              <span className="opacity-80">{m.name}</span>
-              <span className="font-semibold">{m.value}</span>
-              <span
-                className={`flex items-center gap-0.5 ${
-                  m.up ? "text-accent" : "text-danger"
-                }`}
-              >
-                {m.up ? (
-                  <TrendingUp className="h-3 w-3" />
-                ) : (
-                  <TrendingDown className="h-3 w-3" />
-                )}
-                {m.change}
-              </span>
-            </div>
-          ))}
+      {/* Market ticker - Scrolling automático con CSS */}
+      <div className="ticker-container border-b border-border bg-primary text-primary-foreground overflow-hidden">
+        <div className="relative whitespace-nowrap py-2">
+          {/* Primera copia */}
+          <div className="inline-flex animate-ticker items-center gap-8 text-xs font-medium">
+            {MARKET_SNAPSHOT.map((m) => (
+              <div key={m.name} className="inline-flex items-center gap-2">
+                <span className="opacity-80">{m.name}</span>
+                <span className="font-semibold">{m.value}</span>
+                <span
+                  className={`flex items-center gap-0.5 ${
+                    m.up ? "text-accent" : "text-danger"
+                  }`}
+                >
+                  {m.up ? (
+                    <TrendingUp className="h-3 w-3" />
+                  ) : (
+                    <TrendingDown className="h-3 w-3" />
+                  )}
+                  {m.change}
+                </span>
+              </div>
+            ))}
+          </div>
+          {/* Segunda copia para efecto infinito */}
+          <div className="inline-flex animate-ticker2 items-center gap-8 text-xs font-medium">
+            {MARKET_SNAPSHOT.map((m) => (
+              <div key={`${m.name}-2`} className="inline-flex items-center gap-2">
+                <span className="opacity-80">{m.name}</span>
+                <span className="font-semibold">{m.value}</span>
+                <span
+                  className={`flex items-center gap-0.5 ${
+                    m.up ? "text-accent" : "text-danger"
+                  }`}
+                >
+                  {m.up ? (
+                    <TrendingUp className="h-3 w-3" />
+                  ) : (
+                    <TrendingDown className="h-3 w-3" />
+                  )}
+                  {m.change}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 

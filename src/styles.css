@@ -223,3 +223,46 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   }
 }
+
+/* ✅ Ticker Animations - Scrolling automático */
+@keyframes ticker {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes ticker2 {
+  0% {
+    transform: translateX(50%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.animate-ticker {
+  animation: ticker 30s linear infinite;
+}
+
+.animate-ticker2 {
+  animation: ticker2 30s linear infinite;
+}
+
+/* ✅ Hover pause - al pasar el mouse se detiene */
+.ticker-container:hover .animate-ticker,
+.ticker-container:hover .animate-ticker2 {
+  animation-play-state: paused;
+}
+
+/* ✅ Responsive - ajustar velocidad en móvil */
+@media (max-width: 768px) {
+  .animate-ticker {
+    animation-duration: 20s;
+  }
+  .animate-ticker2 {
+    animation-duration: 20s;
+  }
+}
