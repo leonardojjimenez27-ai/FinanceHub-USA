@@ -136,6 +136,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "alternate", type: "application/rss+xml", title: "FinanceHub USA RSS Feed", href: "/rss.xml" },
     ],
     scripts: [
+      // ✅ Google AdSense
+      {
+        async: true,
+        src: "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6695449986047593",
+        crossorigin: "anonymous",
+      },
       // Schema.org - WebSite
       {
         type: "application/ld+json",
