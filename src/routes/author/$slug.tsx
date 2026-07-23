@@ -183,7 +183,7 @@ function AuthorPage() {
               </span>
               {profile.twitter && (
                 <a
-                  href={`https://twitter.com/${profile.twitter.replace('@', '')}`}
+                  href={`https://x.com/angelibiza64627${profile.twitter.replace('@', '')}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-white/20 transition"

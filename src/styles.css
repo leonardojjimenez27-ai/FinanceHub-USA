@@ -224,7 +224,7 @@
   }
 }
 
-/* ✅ Ticker Animations - Scrolling automático */
+/* ✅ Ticker Animations - Scrolling automático sin pausa */
 @keyframes ticker {
   0% {
     transform: translateX(0);
@@ -249,12 +249,6 @@
 
 .animate-ticker2 {
   animation: ticker2 30s linear infinite;
-}
-
-/* ✅ Hover pause - al pasar el mouse se detiene */
-.ticker-container:hover .animate-ticker,
-.ticker-container:hover .animate-ticker2 {
-  animation-play-state: paused;
 }
 
 /* ✅ Responsive - ajustar velocidad en móvil */
