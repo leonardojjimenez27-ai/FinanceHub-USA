@@ -43,7 +43,7 @@ export const Route = createFileRoute("/terms")({
         indirect, incidental, or consequential damages arising from your use of the site.
       </p>
       <h2>Contact</h2>
-      <p>Questions about these Terms? Contact legal@financehubusa.example.</p>
+      <p>Questions about these Terms? Contact us at <a href="mailto:admin@financehubus.com" className="text-accent hover:underline">admin@financehubus.com</a>.</p>
     </LegalLayout>
   ),
 });

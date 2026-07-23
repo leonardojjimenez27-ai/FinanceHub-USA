@@ -33,6 +33,9 @@ export const Route = createFileRoute("/disclaimer")({
         Before making financial, tax, or legal decisions, consult a qualified licensed
         professional who can evaluate your specific situation.
       </p>
+      <p className="mt-4 text-sm text-muted-foreground">
+        Questions? Contact us at <a href="mailto:admin@financehubus.com" className="text-accent hover:underline">admin@financehubus.com</a>.
+      </p>
     </LegalLayout>
   ),
 });

@@ -40,7 +40,7 @@ export const Route = createFileRoute("/privacy")({
       <h2>Your choices</h2>
       <p>You can unsubscribe from emails at any time, or delete your account by contacting us.</p>
       <h2>Contact</h2>
-      <p>Questions? Contact privacy@financehubusa.example.</p>
+      <p>Questions? Contact us at <a href="mailto:admin@financehubus.com" className="text-accent hover:underline">admin@financehubus.com</a>.</p>
     </LegalLayout>
   ),
 });
