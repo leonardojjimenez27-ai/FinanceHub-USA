@@ -6,7 +6,11 @@ import { supabase } from "@/integrations/supabase/client";
 
 function useTheme() {
   const [dark, setDark] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
   useEffect(() => {
+    // ✅ Solo se ejecuta en el cliente para evitar hydration mismatch
+    setIsMounted(true);
     const stored = typeof window !== "undefined" ? localStorage.getItem("fh-theme") : null;
     const prefers =
       typeof window !== "undefined" &&
@@ -15,17 +19,19 @@ function useTheme() {
     setDark(isDark);
     document.documentElement.classList.toggle("dark", isDark);
   }, []);
+
   const toggle = () => {
     const next = !dark;
     setDark(next);
     document.documentElement.classList.toggle("dark", next);
     localStorage.setItem("fh-theme", next ? "dark" : "light");
   };
-  return { dark, toggle };
+
+  return { dark, toggle, isMounted };
 }
 
 export function SiteHeader() {
-  const { dark, toggle } = useTheme();
+  const { dark, toggle, isMounted } = useTheme();
   const [open, setOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [q, setQ] = useState("");
@@ -80,7 +86,6 @@ export function SiteHeader() {
           >
             Tools
           </Link>
-          {/* ✅ Enlace a la página de autor */}
           <Link
             to="/author/leonardo-jimenez"
             className="rounded-md px-3 py-1.5 text-muted-foreground transition hover:bg-muted hover:text-foreground"
@@ -97,13 +102,16 @@ export function SiteHeader() {
           >
             <Search className="h-4 w-4" />
           </button>
-          <button
-            aria-label="Toggle theme"
-            onClick={toggle}
-            className="rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
-          >
-            {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          </button>
+          {/* ✅ El botón de tema solo se renderiza después de la hidratación */}
+          {isMounted && (
+            <button
+              aria-label="Toggle theme"
+              onClick={toggle}
+              className="rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
+            >
+              {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
+          )}
           {userId ? (
             <div className="flex items-center gap-1">
               <Link
@@ -113,7 +121,6 @@ export function SiteHeader() {
               >
                 <User className="h-4 w-4" />
               </Link>
-              {/* ✅ Enlace a la página de autor (versión icono) */}
               <Link
                 to="/author/leonardo-jimenez"
                 className="rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -130,7 +137,6 @@ export function SiteHeader() {
               >
                 Sign in
               </Link>
-              {/* ✅ Enlace a la página de autor para usuarios no logueados */}
               <Link
                 to="/author/leonardo-jimenez"
                 className="hidden sm:inline-flex items-center gap-1 rounded-md border border-input px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -183,7 +189,6 @@ export function SiteHeader() {
             <Link to="/tools" onClick={() => setOpen(false)} className="rounded-md px-3 py-2 text-muted-foreground hover:bg-muted hover:text-foreground">
               Tools
             </Link>
-            {/* ✅ Enlace a la página de autor en el menú móvil */}
             <Link
               to="/author/leonardo-jimenez"
               onClick={() => setOpen(false)}
