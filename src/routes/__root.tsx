@@ -136,6 +136,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "alternate", type: "application/rss+xml", title: "FinanceHub USA RSS Feed", href: "/rss.xml" },
     ],
     scripts: [
+      // ✅ Google CMP (Consent Management Platform) - RGPD
+      {
+        async: true,
+        src: "https://fundingchoicesmessages.google.com/i/pub-6695449986047593?ers=1",
+      },
       // ✅ Google AdSense
       {
         async: true,
