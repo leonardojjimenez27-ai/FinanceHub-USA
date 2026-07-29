@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { supabase } from "@/integrations/supabase/client";
+import CookieBanner from "@/components/CookieBanner"; // ✅ IMPORTADO EL BANNER DE COOKIES
 
 function NotFoundComponent() {
   return (
@@ -251,6 +252,7 @@ function RootComponent() {
           <Outlet />
         </main>
         <SiteFooter />
+        <CookieBanner /> {/* ✅ BANNER DE COOKIES AÑADIDO AQUÍ */}
       </div>
     </QueryClientProvider>
   );
