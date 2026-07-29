@@ -4,7 +4,6 @@ export default function CookieBanner() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    // Comprueba si el usuario ya aceptó las cookies
     const consent = localStorage.getItem('cookie-consent');
     if (!consent) {
       setIsVisible(true);
@@ -39,7 +38,10 @@ export default function CookieBanner() {
     }}>
       <p style={{ margin: 0, fontSize: '14px', fontFamily: 'sans-serif' }}>
         This website uses cookies to ensure you get the best experience. Read our{' '}
-        <a href="/privacy-policy" style={{ color: '#3b82f6', textDecoration: 'underline' }}>
+        <a 
+          href="/privacy"  // ✅ CORREGIDO: Ahora apunta a /privacy
+          style={{ color: '#3b82f6', textDecoration: 'underline' }}
+        >
           Privacy Policy
         </a>.
       </p>
