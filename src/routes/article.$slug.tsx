@@ -3,10 +3,17 @@ import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { getArticleBySlug } from "@/lib/content.functions";
 import { ArticleCard } from "@/components/site/ArticleCard";
 import { Breadcrumbs, breadcrumbJsonLd } from "@/components/site/Breadcrumbs";
-// import { AdSlot } from "@/components/site/AdSlot"; // ❌ Comentado temporalmente
+// import { AdSlot } from "@/components/site/AdSlot"; // Comentado temporalmente
 import { NewsletterForm } from "@/components/site/NewsletterForm";
-import { Facebook, Linkedin, Twitter, Link as LinkIcon, Clock, Calendar } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import {
+  Facebook,
+  Linkedin,
+  Twitter,
+  Link as LinkIcon,
+  Clock,
+  Calendar,
+} from "lucide-react";
+import { useMemo } from "react";
 
 const opts = (slug: string) =>
   queryOptions({
@@ -15,39 +22,103 @@ const opts = (slug: string) =>
   });
 
 export const Route = createFileRoute("/article/$slug")({
-  ssr: false,
   loader: async ({ params, context }) => {
     const data = await context.queryClient.ensureQueryData(opts(params.slug));
-    if (!data.article) throw notFound();
+
+    if (!data.article) {
+      throw notFound();
+    }
+
     return data;
   },
+
   head: ({ params, loaderData }) => {
     const a: any = loaderData?.article;
+
     if (!a) {
       return {
-        meta: [{ title: "Article not found" }, { name: "robots", content: "index, follow" }],
+        meta: [
+          {
+            title: "Article not found — FinanceHub USA",
+          },
+          {
+            name: "robots",
+            content: "noindex, follow",
+          },
+        ],
       };
     }
+
     const url = `/article/${params.slug}`;
     const title = a.seo_title || a.title;
-    const desc = a.seo_description || a.excerpt || `${a.title} — FinanceHub USA`;
+    const desc =
+      a.seo_description ||
+      a.excerpt ||
+      `${a.title} — FinanceHub USA`;
+
+    const authorName =
+      a.profiles?.display_name ||
+      a.author_name ||
+      "FinanceHub USA";
+
     const meta: any[] = [
-      { title: `${title} — FinanceHub USA` },
-      { name: "description", content: desc },
-      { name: "keywords", content: a.seo_keywords ?? undefined },
-      { property: "og:title", content: title },
-      { property: "og:description", content: desc },
-      { property: "og:url", content: url },
-      { property: "og:type", content: "article" },
-      { property: "article:published_time", content: a.published_at ?? undefined },
-      { property: "article:modified_time", content: a.updated_at ?? undefined },
-      { name: "twitter:title", content: title },
-      { name: "twitter:description", content: desc },
+      {
+        title: `${title} — FinanceHub USA`,
+      },
+      {
+        name: "description",
+        content: desc,
+      },
+      {
+        name: "keywords",
+        content: a.seo_keywords ?? undefined,
+      },
+      {
+        property: "og:title",
+        content: title,
+      },
+      {
+        property: "og:description",
+        content: desc,
+      },
+      {
+        property: "og:url",
+        content: url,
+      },
+      {
+        property: "og:type",
+        content: "article",
+      },
+      {
+        property: "article:published_time",
+        content: a.published_at ?? undefined,
+      },
+      {
+        property: "article:modified_time",
+        content: a.updated_at ?? undefined,
+      },
+      {
+        name: "twitter:title",
+        content: title,
+      },
+      {
+        name: "twitter:description",
+        content: desc,
+      },
     ];
+
     if (a.og_image || a.featured_image) {
-      meta.push({ property: "og:image", content: a.og_image || a.featured_image });
-      meta.push({ name: "twitter:image", content: a.og_image || a.featured_image });
+      meta.push({
+        property: "og:image",
+        content: a.og_image || a.featured_image,
+      });
+
+      meta.push({
+        name: "twitter:image",
+        content: a.og_image || a.featured_image,
+      });
     }
+
     const jsonLd: any = {
       "@context": "https://schema.org",
       "@type": "Article",
@@ -56,29 +127,53 @@ export const Route = createFileRoute("/article/$slug")({
       image: a.og_image || a.featured_image || undefined,
       datePublished: a.published_at,
       dateModified: a.updated_at,
-      author: a.profiles?.display_name
-        ? { "@type": "Person", name: a.profiles.display_name }
-        : undefined,
+      author: {
+        "@type": "Person",
+        name: authorName,
+        ...(a.profiles?.slug
+          ? {
+              url: `/author/${a.profiles.slug}`,
+            }
+          : {}),
+      },
       publisher: {
         "@type": "Organization",
         name: "FinanceHub USA",
+        url: "https://www.financehubus.com",
       },
-      mainEntityOfPage: { "@type": "WebPage", "@id": url },
+      mainEntityOfPage: {
+        "@type": "WebPage",
+        "@id": url,
+      },
     };
+
     const scripts: any[] = [
-      { type: "application/ld+json", children: JSON.stringify(jsonLd) },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(jsonLd),
+      },
       {
         type: "application/ld+json",
         children: JSON.stringify(
           breadcrumbJsonLd([
             a.categories
-              ? { name: a.categories.name, url: `/category/${a.categories.slug}` }
-              : { name: "Article", url },
-            { name: a.title, url },
+              ? {
+                  name: a.categories.name,
+                  url: `/category/${a.categories.slug}`,
+                }
+              : {
+                  name: "Article",
+                  url,
+                },
+            {
+              name: a.title,
+              url,
+            },
           ]),
         ),
       },
     ];
+
     if (Array.isArray(a.faq) && a.faq.length > 0) {
       scripts.push({
         type: "application/ld+json",
@@ -88,23 +183,43 @@ export const Route = createFileRoute("/article/$slug")({
           mainEntity: a.faq.map((f: any) => ({
             "@type": "Question",
             name: f.question,
-            acceptedAnswer: { "@type": "Answer", text: f.answer },
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: f.answer,
+            },
           })),
         }),
       });
     }
+
     return {
       meta,
-      links: [{ rel: "canonical", href: a.canonical_url || url }],
+      links: [
+        {
+          rel: "canonical",
+          href: a.canonical_url || url,
+        },
+      ],
       scripts,
     };
   },
+
   component: ArticlePage,
+
   notFoundComponent: () => (
     <div className="container-page py-16 text-center">
-      <h1 className="font-display text-3xl font-bold">Article not found</h1>
-      <p className="mt-2 text-muted-foreground">This story may have moved or been unpublished.</p>
-      <Link to="/" className="mt-4 inline-block text-accent underline">
+      <h1 className="font-display text-3xl font-bold">
+        Article not found
+      </h1>
+
+      <p className="mt-2 text-muted-foreground">
+        This story may have moved or been unpublished.
+      </p>
+
+      <Link
+        to="/"
+        className="mt-4 inline-block text-accent underline"
+      >
         Back home
       </Link>
     </div>
@@ -114,14 +229,26 @@ export const Route = createFileRoute("/article/$slug")({
 function ArticlePage() {
   const { slug } = Route.useParams();
   const { data } = useSuspenseQuery(opts(slug));
+
   const article: any = data.article!;
   const related = data.related;
 
-  const toc = useMemo(() => extractHeadings(article.content || ""), [article.content]);
+  const toc = useMemo(
+    () => extractHeadings(article.content || ""),
+    [article.content],
+  );
 
   const shareUrl =
-    typeof window !== "undefined" ? window.location.href : `/article/${slug}`;
+    typeof window !== "undefined"
+      ? window.location.href
+      : `https://www.financehubus.com/article/${slug}`;
+
   const shareText = encodeURIComponent(article.title);
+
+  const authorName =
+    article.profiles?.display_name ||
+    article.author_name ||
+    "FinanceHub USA";
 
   return (
     <div>
@@ -129,9 +256,16 @@ function ArticlePage() {
         <Breadcrumbs
           items={[
             article.categories
-              ? { label: article.categories.name, href: `/category/${article.categories.slug}` }
-              : { label: "Article" },
-            { label: article.title },
+              ? {
+                  label: article.categories.name,
+                  href: `/category/${article.categories.slug}`,
+                }
+              : {
+                  label: "Article",
+                },
+            {
+              label: article.title,
+            },
           ]}
         />
 
@@ -139,45 +273,74 @@ function ArticlePage() {
           {article.categories && (
             <Link
               to="/category/$slug"
-              params={{ slug: article.categories.slug }}
+              params={{
+                slug: article.categories.slug,
+              }}
               className="text-xs font-semibold uppercase tracking-widest text-accent"
             >
               {article.categories.name}
             </Link>
           )}
+
           <h1 className="mt-2 font-display text-4xl font-bold leading-tight text-foreground md:text-5xl">
             {article.title}
           </h1>
+
           {article.excerpt && (
-            <p className="mt-4 text-lg text-muted-foreground">{article.excerpt}</p>
+            <p className="mt-4 text-lg text-muted-foreground">
+              {article.excerpt}
+            </p>
           )}
+
           <div className="mt-5 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
-            <span>By {article.author_name || "FinanceHub Team"}</span>
+            {article.profiles?.slug ? (
+              <Link
+                to="/author/$slug"
+                params={{
+                  slug: article.profiles.slug,
+                }}
+                className="hover:text-accent hover:underline"
+              >
+                By {authorName}
+              </Link>
+            ) : (
+              <span>By {authorName}</span>
+            )}
+
             {article.published_at && (
               <span className="flex items-center gap-1">
                 <Calendar className="h-3 w-3" />
-                {new Date(article.published_at).toLocaleDateString("en-US", {
+
+                {new Date(
+                  article.published_at,
+                ).toLocaleDateString("en-US", {
                   month: "long",
                   day: "numeric",
                   year: "numeric",
                 })}
               </span>
             )}
+
             {article.reading_time && (
               <span className="flex items-center gap-1">
-                <Clock className="h-3 w-3" /> {article.reading_time} min read
+                <Clock className="h-3 w-3" />
+                {article.reading_time} min read
               </span>
             )}
-            {article.updated_at && article.updated_at !== article.published_at && (
-              <span className="opacity-70">
-                Updated{" "}
-                {new Date(article.updated_at).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                })}
-              </span>
-            )}
+
+            {article.updated_at &&
+              article.updated_at !== article.published_at && (
+                <span className="opacity-70">
+                  Updated{" "}
+                  {new Date(
+                    article.updated_at,
+                  ).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </span>
+              )}
           </div>
         </header>
 
@@ -194,14 +357,24 @@ function ArticlePage() {
         <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_280px]">
           <div className="min-w-0">
             {toc.length > 1 && (
-              <nav aria-label="Table of contents" className="mb-8 rounded-lg border border-border bg-secondary/40 p-4">
+              <nav
+                aria-label="Table of contents"
+                className="mb-8 rounded-lg border border-border bg-secondary/40 p-4"
+              >
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   Table of contents
                 </p>
+
                 <ol className="mt-2 space-y-1 text-sm">
                   {toc.map((h) => (
-                    <li key={h.id} className={h.level === 3 ? "pl-4" : ""}>
-                      <a href={`#${h.id}`} className="text-foreground hover:text-accent">
+                    <li
+                      key={h.id}
+                      className={h.level === 3 ? "pl-4" : ""}
+                    >
+                      <a
+                        href={`#${h.id}`}
+                        className="text-foreground hover:text-accent"
+                      >
                         {h.text}
                       </a>
                     </li>
@@ -212,65 +385,90 @@ function ArticlePage() {
 
             <div
               className="prose-article"
-              dangerouslySetInnerHTML={{ __html: renderContent(article.content || "") }}
+              dangerouslySetInnerHTML={{
+                __html: renderContent(article.content || ""),
+              }}
             />
 
-            {Array.isArray(article.faq) && article.faq.length > 0 && (
-              <section className="mt-12">
-                <h2 className="font-display text-2xl font-bold text-foreground">
-                  Frequently asked questions
-                </h2>
-                <div className="mt-4 divide-y divide-border rounded-lg border border-border">
-                  {article.faq.map((f: any, i: number) => (
-                    <details key={i} className="group p-4">
-                      <summary className="cursor-pointer list-none font-semibold text-foreground marker:hidden">
-                        {f.question}
-                      </summary>
-                      <p className="mt-2 text-sm text-muted-foreground">{f.answer}</p>
-                    </details>
-                  ))}
-                </div>
-              </section>
-            )}
+            {Array.isArray(article.faq) &&
+              article.faq.length > 0 && (
+                <section className="mt-12">
+                  <h2 className="font-display text-2xl font-bold text-foreground">
+                    Frequently asked questions
+                  </h2>
 
-            {/* ❌ Bloque de anuncios inline eliminado temporalmente */}
+                  <div className="mt-4 divide-y divide-border rounded-lg border border-border">
+                    {article.faq.map(
+                      (f: any, i: number) => (
+                        <details
+                          key={i}
+                          className="group p-4"
+                        >
+                          <summary className="cursor-pointer list-none font-semibold text-foreground marker:hidden">
+                            {f.question}
+                          </summary>
+
+                          <p className="mt-2 text-sm text-muted-foreground">
+                            {f.answer}
+                          </p>
+                        </details>
+                      ),
+                    )}
+                  </div>
+                </section>
+              )}
+
+            {/* Bloque de anuncios inline comentado temporalmente */}
             {/* <AdSlot slot="inline" className="my-10" /> */}
 
-            {/* ✅ Author bio - Con enlace a página de autor */}
             {article.profiles && (
               <aside className="mt-10 flex gap-4 rounded-lg border border-border bg-card p-5">
-                {/* Avatar con enlace */}
                 <Link
                   to="/author/$slug"
-                  params={{ slug: article.profiles.slug || 'leonardo-jimenez' }}
+                  params={{
+                    slug:
+                      article.profiles.slug ||
+                      "leonardo-jimenez",
+                  }}
                   className="flex-none"
                 >
                   {article.profiles.avatar_url ? (
                     <img
                       src={article.profiles.avatar_url}
-                      alt={article.profiles.display_name || "Author"}
+                      alt={
+                        article.profiles.display_name ||
+                        "Author"
+                      }
                       className="h-14 w-14 rounded-full object-cover transition hover:opacity-80"
                     />
                   ) : (
                     <div className="grid h-14 w-14 place-items-center rounded-full bg-primary font-bold text-primary-foreground">
-                      {article.profiles.display_name?.[0] ?? "A"}
+                      {article.profiles.display_name?.[0] ??
+                        "A"}
                     </div>
                   )}
                 </Link>
+
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-wide text-accent">
                     Written by
                   </p>
-                  {/* Nombre del autor con enlace */}
+
                   <Link
                     to="/author/$slug"
-                    params={{ slug: article.profiles.slug || 'leonardo-jimenez' }}
-                    className="text-lg font-display font-bold text-foreground hover:text-accent transition"
+                    params={{
+                      slug:
+                        article.profiles.slug ||
+                        "leonardo-jimenez",
+                    }}
+                    className="text-lg font-display font-bold text-foreground transition hover:text-accent"
                   >
-                    {article.profiles.display_name || "Leonardo Jiménez"}
+                    {article.profiles.display_name ||
+                      "Leonardo Jiménez"}
                   </Link>
+
                   {article.profiles.bio && (
-                    <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
+                    <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
                       {article.profiles.bio}
                     </p>
                   )}
@@ -288,35 +486,58 @@ function ArticlePage() {
               <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 Share
               </p>
+
               <div className="mt-2 flex flex-wrap gap-2">
                 <ShareBtn
-                  href={`https://twitter.com/intent/tweet?text=${shareText}&url=${encodeURIComponent(shareUrl)}`}
-                  icon={<Twitter className="h-4 w-4" />}
+                  href={`https://twitter.com/intent/tweet?text=${shareText}&url=${encodeURIComponent(
+                    shareUrl,
+                  )}`}
+                  icon={
+                    <Twitter className="h-4 w-4" />
+                  }
                   label="X"
                 />
+
                 <ShareBtn
-                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`}
-                  icon={<Facebook className="h-4 w-4" />}
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+                    shareUrl,
+                  )}`}
+                  icon={
+                    <Facebook className="h-4 w-4" />
+                  }
                   label="Facebook"
                 />
+
                 <ShareBtn
-                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
-                  icon={<Linkedin className="h-4 w-4" />}
+                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
+                    shareUrl,
+                  )}`}
+                  icon={
+                    <Linkedin className="h-4 w-4" />
+                  }
                   label="LinkedIn"
                 />
+
                 <button
                   type="button"
                   onClick={() => {
-                    if (typeof navigator !== "undefined") navigator.clipboard?.writeText(shareUrl);
+                    if (
+                      typeof navigator !== "undefined"
+                    ) {
+                      navigator.clipboard?.writeText(
+                        shareUrl,
+                      );
+                    }
                   }}
                   className="inline-flex items-center gap-1 rounded-md border border-input px-2 py-1 text-xs hover:bg-muted"
                 >
-                  <LinkIcon className="h-4 w-4" /> Copy
+                  <LinkIcon className="h-4 w-4" />
+                  Copy
                 </button>
               </div>
             </div>
 
-            {/* ❌ Bloque de anuncios sidebar eliminado temporalmente */}
+            {/* Bloque de anuncios sidebar comentado temporalmente */}
             {/* <AdSlot slot="sidebar" /> */}
           </aside>
         </div>
@@ -327,6 +548,7 @@ function ArticlePage() {
           <h2 className="mb-5 font-display text-2xl font-bold text-foreground">
             Related articles
           </h2>
+
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {related.map((r: any) => (
               <ArticleCard
@@ -338,7 +560,8 @@ function ArticlePage() {
                   featured_image: r.featured_image,
                   reading_time: r.reading_time,
                   published_at: r.published_at,
-                  category_slug: article.categories?.slug,
+                  category_slug:
+                    article.categories?.slug,
                 }}
               />
             ))}
@@ -371,12 +594,16 @@ function ShareBtn({
   );
 }
 
-// Minimal safe-ish HTML renderer that also injects IDs on h2/h3 for the TOC.
+// Añade IDs a h2/h3 para el índice del artículo.
 function renderContent(html: string): string {
-  return html.replace(/<(h2|h3)>([^<]+)<\/\1>/g, (_m, tag, text) => {
-    const id = slugifyHeading(text);
-    return `<${tag} id="${id}">${text}</${tag}>`;
-  });
+  return html.replace(
+    /<(h2|h3)>([^<]+)<\/\1>/g,
+    (_m, tag, text) => {
+      const id = slugifyHeading(text);
+
+      return `<${tag} id="${id}">${text}</${tag}>`;
+    },
+  );
 }
 
 function slugifyHeading(text: string) {
@@ -390,10 +617,22 @@ function slugifyHeading(text: string) {
 
 function extractHeadings(html: string) {
   const re = /<(h2|h3)>([^<]+)<\/\1>/g;
-  const out: { level: number; id: string; text: string }[] = [];
+
+  const out: {
+    level: number;
+    id: string;
+    text: string;
+  }[] = [];
+
   let m;
+
   while ((m = re.exec(html))) {
-    out.push({ level: m[1] === "h2" ? 2 : 3, id: slugifyHeading(m[2]), text: m[2] });
+    out.push({
+      level: m[1] === "h2" ? 2 : 3,
+      id: slugifyHeading(m[2]),
+      text: m[2],
+    });
   }
+
   return out;
 }

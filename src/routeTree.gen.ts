@@ -41,6 +41,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardStocksRouteImport } from './routes/dashboard.stocks'
 import { Route as DashboardCryptoRouteImport } from './routes/dashboard.crypto'
 import { Route as CategorySlugRouteImport } from './routes/category.$slug'
+import { Route as AuthorSlugRouteImport } from './routes/author/$slug'
 import { Route as ArticleSlugRouteImport } from './routes/article.$slug'
 
 const ToolsRoute = ToolsRouteImport.update({
@@ -203,6 +204,11 @@ const CategorySlugRoute = CategorySlugRouteImport.update({
   path: '/category/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthorSlugRoute = AuthorSlugRouteImport.update({
+  id: '/author/$slug',
+  path: '/author/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ArticleSlugRoute = ArticleSlugRouteImport.update({
   id: '/article/$slug',
   path: '/article/$slug',
@@ -240,6 +246,7 @@ export interface FileRoutesByFullPath {
   '/test': typeof TestRoute
   '/tools': typeof ToolsRoute
   '/article/$slug': typeof ArticleSlugRoute
+  '/author/$slug': typeof AuthorSlugRoute
   '/category/$slug': typeof CategorySlugRoute
   '/dashboard/crypto': typeof DashboardCryptoRoute
   '/dashboard/stocks': typeof DashboardStocksRoute
@@ -275,6 +282,7 @@ export interface FileRoutesByTo {
   '/test': typeof TestRoute
   '/tools': typeof ToolsRoute
   '/article/$slug': typeof ArticleSlugRoute
+  '/author/$slug': typeof AuthorSlugRoute
   '/category/$slug': typeof CategorySlugRoute
   '/dashboard/crypto': typeof DashboardCryptoRoute
   '/dashboard/stocks': typeof DashboardStocksRoute
@@ -311,6 +319,7 @@ export interface FileRoutesById {
   '/test': typeof TestRoute
   '/tools': typeof ToolsRoute
   '/article/$slug': typeof ArticleSlugRoute
+  '/author/$slug': typeof AuthorSlugRoute
   '/category/$slug': typeof CategorySlugRoute
   '/dashboard/crypto': typeof DashboardCryptoRoute
   '/dashboard/stocks': typeof DashboardStocksRoute
@@ -348,6 +357,7 @@ export interface FileRouteTypes {
     | '/test'
     | '/tools'
     | '/article/$slug'
+    | '/author/$slug'
     | '/category/$slug'
     | '/dashboard/crypto'
     | '/dashboard/stocks'
@@ -383,6 +393,7 @@ export interface FileRouteTypes {
     | '/test'
     | '/tools'
     | '/article/$slug'
+    | '/author/$slug'
     | '/category/$slug'
     | '/dashboard/crypto'
     | '/dashboard/stocks'
@@ -418,6 +429,7 @@ export interface FileRouteTypes {
     | '/test'
     | '/tools'
     | '/article/$slug'
+    | '/author/$slug'
     | '/category/$slug'
     | '/dashboard/crypto'
     | '/dashboard/stocks'
@@ -454,6 +466,7 @@ export interface RootRouteChildren {
   TestRoute: typeof TestRoute
   ToolsRoute: typeof ToolsRoute
   ArticleSlugRoute: typeof ArticleSlugRoute
+  AuthorSlugRoute: typeof AuthorSlugRoute
   CategorySlugRoute: typeof CategorySlugRoute
 }
 
@@ -683,6 +696,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CategorySlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/author/$slug': {
+      id: '/author/$slug'
+      path: '/author/$slug'
+      fullPath: '/author/$slug'
+      preLoaderRoute: typeof AuthorSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/article/$slug': {
       id: '/article/$slug'
       path: '/article/$slug'
@@ -738,6 +758,7 @@ const rootRouteChildren: RootRouteChildren = {
   TestRoute: TestRoute,
   ToolsRoute: ToolsRoute,
   ArticleSlugRoute: ArticleSlugRoute,
+  AuthorSlugRoute: AuthorSlugRoute,
   CategorySlugRoute: CategorySlugRoute,
 }
 export const routeTree = rootRouteImport
