@@ -2,5 +2,22 @@
   "buildCommand": "npm install --legacy-peer-deps && npm run build",
   "installCommand": "npm install --legacy-peer-deps",
   "framework": "vite",
-  "outputDirectory": "dist"
+  "outputDirectory": "dist",
+  "redirects": [
+    {
+      "source": "/how-much-money-should-you-have-left-after-bills",
+      "destination": "/article/how-much-money-should-you-have-left-after-bills",
+      "permanent": true
+    },
+    {
+      "source": "/is-it-better-to-save-weekly-or-monthly",
+      "destination": "/article/is-it-better-to-save-weekly-or-monthly",
+      "permanent": true
+    },
+    {
+      "source": "/how-much-should-you-save-from-every-paycheck",
+      "destination": "/article/how-much-should-you-save-from-every-paycheck",
+      "permanent": true
+    }
+  ]
 }
