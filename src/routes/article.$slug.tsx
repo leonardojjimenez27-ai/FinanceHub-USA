@@ -1,9 +1,10 @@
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
-import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { getArticleBySlug } from "@/lib/content.functions";
 import { ArticleCard } from "@/components/site/ArticleCard";
-import { Breadcrumbs, breadcrumbJsonLd } from "@/components/site/Breadcrumbs";
-// import { AdSlot } from "@/components/site/AdSlot"; // Comentado temporalmente
+import {
+  Breadcrumbs,
+  breadcrumbJsonLd,
+} from "@/components/site/Breadcrumbs";
 import { NewsletterForm } from "@/components/site/NewsletterForm";
 import {
   Facebook,
@@ -13,17 +14,19 @@ import {
   Clock,
   Calendar,
 } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, type ReactNode } from "react";
 
-const opts = (slug: string) =>
-  queryOptions({
-    queryKey: ["article", slug],
-    queryFn: () => getArticleBySlug({ data: { slug } }),
-  });
+const SITE_URL = "https://www.financehubus.com";
 
 export const Route = createFileRoute("/article/$slug")({
-  loader: async ({ params, context }) => {
-    const data = await context.queryClient.ensureQueryData(opts(params.slug));
+  loader: async ({ params }) => {
+    // Cargamos el artículo directamente desde la Server Function.
+    // No dependemos de React Query para el render SSR.
+    const data = await getArticleBySlug({
+      data: {
+        slug: params.slug,
+      },
+    });
 
     if (!data.article) {
       throw notFound();
@@ -49,8 +52,11 @@ export const Route = createFileRoute("/article/$slug")({
       };
     }
 
-    const url = `/article/${params.slug}`;
+    const relativeUrl = `/article/${params.slug}`;
+    const absoluteUrl = `${SITE_URL}${relativeUrl}`;
+
     const title = a.seo_title || a.title;
+
     const desc =
       a.seo_description ||
       a.excerpt ||
@@ -61,6 +67,9 @@ export const Route = createFileRoute("/article/$slug")({
       a.author_name ||
       "FinanceHub USA";
 
+    const canonicalUrl =
+      a.canonical_url || absoluteUrl;
+
     const meta: any[] = [
       {
         title: `${title} — FinanceHub USA`,
@@ -70,8 +79,12 @@ export const Route = createFileRoute("/article/$slug")({
         content: desc,
       },
       {
-        name: "keywords",
-        content: a.seo_keywords ?? undefined,
+        name: "robots",
+        content: "index, follow",
+      },
+      {
+        property: "og:site_name",
+        content: "FinanceHub USA",
       },
       {
         property: "og:title",
@@ -83,7 +96,7 @@ export const Route = createFileRoute("/article/$slug")({
       },
       {
         property: "og:url",
-        content: url,
+        content: absoluteUrl,
       },
       {
         property: "og:type",
@@ -98,6 +111,10 @@ export const Route = createFileRoute("/article/$slug")({
         content: a.updated_at ?? undefined,
       },
       {
+        name: "twitter:card",
+        content: "summary_large_image",
+      },
+      {
         name: "twitter:title",
         content: title,
       },
@@ -106,6 +123,13 @@ export const Route = createFileRoute("/article/$slug")({
         content: desc,
       },
     ];
+
+    if (a.seo_keywords) {
+      meta.push({
+        name: "keywords",
+        content: a.seo_keywords,
+      });
+    }
 
     if (a.og_image || a.featured_image) {
       meta.push({
@@ -119,41 +143,59 @@ export const Route = createFileRoute("/article/$slug")({
       });
     }
 
-    const jsonLd: any = {
+    const articleJsonLd: any = {
       "@context": "https://schema.org",
       "@type": "Article",
+
       headline: a.title,
+
       description: desc,
-      image: a.og_image || a.featured_image || undefined,
-      datePublished: a.published_at,
-      dateModified: a.updated_at,
+
+      image:
+        a.og_image ||
+        a.featured_image ||
+        undefined,
+
+      datePublished:
+        a.published_at || undefined,
+
+      dateModified:
+        a.updated_at ||
+        a.published_at ||
+        undefined,
+
       author: {
         "@type": "Person",
         name: authorName,
+
         ...(a.profiles?.slug
           ? {
-              url: `/author/${a.profiles.slug}`,
+              url: `${SITE_URL}/author/${a.profiles.slug}`,
             }
           : {}),
       },
+
       publisher: {
         "@type": "Organization",
         name: "FinanceHub USA",
-        url: "https://www.financehubus.com",
+        url: SITE_URL,
       },
+
       mainEntityOfPage: {
         "@type": "WebPage",
-        "@id": url,
+        "@id": absoluteUrl,
       },
     };
 
     const scripts: any[] = [
       {
         type: "application/ld+json",
-        children: JSON.stringify(jsonLd),
+        children: JSON.stringify(articleJsonLd),
       },
+
       {
         type: "application/ld+json",
+
         children: JSON.stringify(
           breadcrumbJsonLd([
             a.categories
@@ -163,43 +205,56 @@ export const Route = createFileRoute("/article/$slug")({
                 }
               : {
                   name: "Article",
-                  url,
+                  url: relativeUrl,
                 },
+
             {
               name: a.title,
-              url,
+              url: relativeUrl,
             },
           ]),
         ),
       },
     ];
 
-    if (Array.isArray(a.faq) && a.faq.length > 0) {
+    if (
+      Array.isArray(a.faq) &&
+      a.faq.length > 0
+    ) {
       scripts.push({
         type: "application/ld+json",
+
         children: JSON.stringify({
           "@context": "https://schema.org",
+
           "@type": "FAQPage",
-          mainEntity: a.faq.map((f: any) => ({
-            "@type": "Question",
-            name: f.question,
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: f.answer,
-            },
-          })),
+
+          mainEntity: a.faq.map(
+            (f: any) => ({
+              "@type": "Question",
+
+              name: f.question,
+
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: f.answer,
+              },
+            }),
+          ),
         }),
       });
     }
 
     return {
       meta,
+
       links: [
         {
           rel: "canonical",
-          href: a.canonical_url || url,
+          href: canonicalUrl,
         },
       ],
+
       scripts,
     };
   },
@@ -213,7 +268,8 @@ export const Route = createFileRoute("/article/$slug")({
       </h1>
 
       <p className="mt-2 text-muted-foreground">
-        This story may have moved or been unpublished.
+        This story may have moved or been
+        unpublished.
       </p>
 
       <Link
@@ -228,22 +284,30 @@ export const Route = createFileRoute("/article/$slug")({
 
 function ArticlePage() {
   const { slug } = Route.useParams();
-  const { data } = useSuspenseQuery(opts(slug));
 
-  const article: any = data.article!;
-  const related = data.related;
+  // IMPORTANTE:
+  // Usamos directamente los datos devueltos por el loader.
+  // No usamos useSuspenseQuery ni React Query aquí.
+  const data = Route.useLoaderData();
+
+  const article: any = data.article;
+  const related = data.related ?? [];
 
   const toc = useMemo(
-    () => extractHeadings(article.content || ""),
+    () =>
+      extractHeadings(
+        article.content || "",
+      ),
     [article.content],
   );
 
   const shareUrl =
     typeof window !== "undefined"
       ? window.location.href
-      : `https://www.financehubus.com/article/${slug}`;
+      : `${SITE_URL}/article/${slug}`;
 
-  const shareText = encodeURIComponent(article.title);
+  const shareText =
+    encodeURIComponent(article.title);
 
   const authorName =
     article.profiles?.display_name ||
@@ -257,12 +321,15 @@ function ArticlePage() {
           items={[
             article.categories
               ? {
-                  label: article.categories.name,
+                  label:
+                    article.categories.name,
+
                   href: `/category/${article.categories.slug}`,
                 }
               : {
                   label: "Article",
                 },
+
             {
               label: article.title,
             },
@@ -274,7 +341,8 @@ function ArticlePage() {
             <Link
               to="/category/$slug"
               params={{
-                slug: article.categories.slug,
+                slug:
+                  article.categories.slug,
               }}
               className="text-xs font-semibold uppercase tracking-widest text-accent"
             >
@@ -297,14 +365,17 @@ function ArticlePage() {
               <Link
                 to="/author/$slug"
                 params={{
-                  slug: article.profiles.slug,
+                  slug:
+                    article.profiles.slug,
                 }}
                 className="hover:text-accent hover:underline"
               >
                 By {authorName}
               </Link>
             ) : (
-              <span>By {authorName}</span>
+              <span>
+                By {authorName}
+              </span>
             )}
 
             {article.published_at && (
@@ -313,32 +384,41 @@ function ArticlePage() {
 
                 {new Date(
                   article.published_at,
-                ).toLocaleDateString("en-US", {
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                })}
+                ).toLocaleDateString(
+                  "en-US",
+                  {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                  },
+                )}
               </span>
             )}
 
             {article.reading_time && (
               <span className="flex items-center gap-1">
                 <Clock className="h-3 w-3" />
-                {article.reading_time} min read
+
+                {article.reading_time} min
+                read
               </span>
             )}
 
             {article.updated_at &&
-              article.updated_at !== article.published_at && (
+              article.updated_at !==
+                article.published_at && (
                 <span className="opacity-70">
                   Updated{" "}
                   {new Date(
                     article.updated_at,
-                  ).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
+                  ).toLocaleDateString(
+                    "en-US",
+                    {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    },
+                  )}
                 </span>
               )}
           </div>
@@ -347,7 +427,9 @@ function ArticlePage() {
         {article.featured_image && (
           <div className="mt-8 overflow-hidden rounded-xl">
             <img
-              src={article.featured_image}
+              src={
+                article.featured_image
+              }
               alt={article.title}
               className="aspect-[16/9] w-full object-cover"
             />
@@ -369,7 +451,11 @@ function ArticlePage() {
                   {toc.map((h) => (
                     <li
                       key={h.id}
-                      className={h.level === 3 ? "pl-4" : ""}
+                      className={
+                        h.level === 3
+                          ? "pl-4"
+                          : ""
+                      }
                     >
                       <a
                         href={`#${h.id}`}
@@ -386,30 +472,45 @@ function ArticlePage() {
             <div
               className="prose-article"
               dangerouslySetInnerHTML={{
-                __html: renderContent(article.content || ""),
+                __html:
+                  renderContent(
+                    article.content ||
+                      "",
+                  ),
               }}
             />
 
-            {Array.isArray(article.faq) &&
-              article.faq.length > 0 && (
+            {Array.isArray(
+              article.faq,
+            ) &&
+              article.faq.length >
+                0 && (
                 <section className="mt-12">
                   <h2 className="font-display text-2xl font-bold text-foreground">
-                    Frequently asked questions
+                    Frequently asked
+                    questions
                   </h2>
 
                   <div className="mt-4 divide-y divide-border rounded-lg border border-border">
                     {article.faq.map(
-                      (f: any, i: number) => (
+                      (
+                        f: any,
+                        i: number,
+                      ) => (
                         <details
                           key={i}
                           className="group p-4"
                         >
                           <summary className="cursor-pointer list-none font-semibold text-foreground marker:hidden">
-                            {f.question}
+                            {
+                              f.question
+                            }
                           </summary>
 
                           <p className="mt-2 text-sm text-muted-foreground">
-                            {f.answer}
+                            {
+                              f.answer
+                            }
                           </p>
                         </details>
                       ),
@@ -418,32 +519,38 @@ function ArticlePage() {
                 </section>
               )}
 
-            {/* Bloque de anuncios inline comentado temporalmente */}
-            {/* <AdSlot slot="inline" className="my-10" /> */}
-
             {article.profiles && (
               <aside className="mt-10 flex gap-4 rounded-lg border border-border bg-card p-5">
                 <Link
                   to="/author/$slug"
                   params={{
                     slug:
-                      article.profiles.slug ||
+                      article.profiles
+                        .slug ||
                       "leonardo-jimenez",
                   }}
                   className="flex-none"
                 >
-                  {article.profiles.avatar_url ? (
+                  {article.profiles
+                    .avatar_url ? (
                     <img
-                      src={article.profiles.avatar_url}
+                      src={
+                        article
+                          .profiles
+                          .avatar_url
+                      }
                       alt={
-                        article.profiles.display_name ||
+                        article
+                          .profiles
+                          .display_name ||
                         "Author"
                       }
                       className="h-14 w-14 rounded-full object-cover transition hover:opacity-80"
                     />
                   ) : (
                     <div className="grid h-14 w-14 place-items-center rounded-full bg-primary font-bold text-primary-foreground">
-                      {article.profiles.display_name?.[0] ??
+                      {article.profiles
+                        .display_name?.[0] ??
                         "A"}
                     </div>
                   )}
@@ -458,18 +565,25 @@ function ArticlePage() {
                     to="/author/$slug"
                     params={{
                       slug:
-                        article.profiles.slug ||
+                        article.profiles
+                          .slug ||
                         "leonardo-jimenez",
                     }}
                     className="text-lg font-display font-bold text-foreground transition hover:text-accent"
                   >
-                    {article.profiles.display_name ||
+                    {article.profiles
+                      .display_name ||
                       "Leonardo Jiménez"}
                   </Link>
 
-                  {article.profiles.bio && (
+                  {article.profiles
+                    .bio && (
                     <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
-                      {article.profiles.bio}
+                      {
+                        article
+                          .profiles
+                          .bio
+                      }
                     </p>
                   )}
                 </div>
@@ -477,7 +591,9 @@ function ArticlePage() {
             )}
 
             <section className="mt-10 rounded-xl border border-border bg-secondary/40 p-6">
-              <NewsletterForm source={`article-${slug}`} />
+              <NewsletterForm
+                source={`article-${slug}`}
+              />
             </section>
           </div>
 
@@ -522,7 +638,8 @@ function ArticlePage() {
                   type="button"
                   onClick={() => {
                     if (
-                      typeof navigator !== "undefined"
+                      typeof navigator !==
+                      "undefined"
                     ) {
                       navigator.clipboard?.writeText(
                         shareUrl,
@@ -536,9 +653,6 @@ function ArticlePage() {
                 </button>
               </div>
             </div>
-
-            {/* Bloque de anuncios sidebar comentado temporalmente */}
-            {/* <AdSlot slot="sidebar" /> */}
           </aside>
         </div>
       </article>
@@ -550,21 +664,34 @@ function ArticlePage() {
           </h2>
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {related.map((r: any) => (
-              <ArticleCard
-                key={r.slug}
-                article={{
-                  slug: r.slug,
-                  title: r.title,
-                  excerpt: r.excerpt,
-                  featured_image: r.featured_image,
-                  reading_time: r.reading_time,
-                  published_at: r.published_at,
-                  category_slug:
-                    article.categories?.slug,
-                }}
-              />
-            ))}
+            {related.map(
+              (r: any) => (
+                <ArticleCard
+                  key={r.slug}
+                  article={{
+                    slug: r.slug,
+
+                    title: r.title,
+
+                    excerpt:
+                      r.excerpt,
+
+                    featured_image:
+                      r.featured_image,
+
+                    reading_time:
+                      r.reading_time,
+
+                    published_at:
+                      r.published_at,
+
+                    category_slug:
+                      article.categories
+                        ?.slug,
+                  }}
+                />
+              ),
+            )}
           </div>
         </section>
       )}
@@ -578,7 +705,7 @@ function ShareBtn({
   label,
 }: {
   href: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   label: string;
 }) {
   return (
@@ -594,29 +721,40 @@ function ShareBtn({
   );
 }
 
-// Añade IDs a h2/h3 para el índice del artículo.
-function renderContent(html: string): string {
+function renderContent(
+  html: string,
+): string {
   return html.replace(
     /<(h2|h3)>([^<]+)<\/\1>/g,
+
     (_m, tag, text) => {
-      const id = slugifyHeading(text);
+      const id =
+        slugifyHeading(text);
 
       return `<${tag} id="${id}">${text}</${tag}>`;
     },
   );
 }
 
-function slugifyHeading(text: string) {
+function slugifyHeading(
+  text: string,
+) {
   return text
     .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(
+      /[^a-z0-9\s-]/g,
+      "",
+    )
     .trim()
     .replace(/\s+/g, "-")
     .slice(0, 80);
 }
 
-function extractHeadings(html: string) {
-  const re = /<(h2|h3)>([^<]+)<\/\1>/g;
+function extractHeadings(
+  html: string,
+) {
+  const re =
+    /<(h2|h3)>([^<]+)<\/\1>/g;
 
   const out: {
     level: number;
@@ -626,10 +764,19 @@ function extractHeadings(html: string) {
 
   let m;
 
-  while ((m = re.exec(html))) {
+  while (
+    (m = re.exec(html))
+  ) {
     out.push({
-      level: m[1] === "h2" ? 2 : 3,
-      id: slugifyHeading(m[2]),
+      level:
+        m[1] === "h2"
+          ? 2
+          : 3,
+
+      id: slugifyHeading(
+        m[2],
+      ),
+
       text: m[2],
     });
   }
