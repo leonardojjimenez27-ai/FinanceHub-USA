@@ -20,13 +20,18 @@ const SITE_URL = "https://www.financehubus.com";
 
 export const Route = createFileRoute("/article/$slug")({
   loader: async ({ params }) => {
-    // Cargamos el artículo directamente desde la Server Function.
-    // No dependemos de React Query para el render SSR.
+    console.log("🔥 SSR ARTICLE LOADER START:", params.slug);
+
     const data = await getArticleBySlug({
       data: {
         slug: params.slug,
       },
     });
+
+    console.log(
+      "🔥 SSR ARTICLE LOADER RESULT:",
+      data.article?.title ?? "NULL",
+    );
 
     if (!data.article) {
       throw notFound();
@@ -146,41 +151,32 @@ export const Route = createFileRoute("/article/$slug")({
     const articleJsonLd: any = {
       "@context": "https://schema.org",
       "@type": "Article",
-
       headline: a.title,
-
       description: desc,
-
       image:
         a.og_image ||
         a.featured_image ||
         undefined,
-
       datePublished:
         a.published_at || undefined,
-
       dateModified:
         a.updated_at ||
         a.published_at ||
         undefined,
-
       author: {
         "@type": "Person",
         name: authorName,
-
         ...(a.profiles?.slug
           ? {
               url: `${SITE_URL}/author/${a.profiles.slug}`,
             }
           : {}),
       },
-
       publisher: {
         "@type": "Organization",
         name: "FinanceHub USA",
         url: SITE_URL,
       },
-
       mainEntityOfPage: {
         "@type": "WebPage",
         "@id": absoluteUrl,
@@ -192,10 +188,8 @@ export const Route = createFileRoute("/article/$slug")({
         type: "application/ld+json",
         children: JSON.stringify(articleJsonLd),
       },
-
       {
         type: "application/ld+json",
-
         children: JSON.stringify(
           breadcrumbJsonLd([
             a.categories
@@ -207,7 +201,6 @@ export const Route = createFileRoute("/article/$slug")({
                   name: "Article",
                   url: relativeUrl,
                 },
-
             {
               name: a.title,
               url: relativeUrl,
@@ -223,18 +216,13 @@ export const Route = createFileRoute("/article/$slug")({
     ) {
       scripts.push({
         type: "application/ld+json",
-
         children: JSON.stringify({
           "@context": "https://schema.org",
-
           "@type": "FAQPage",
-
           mainEntity: a.faq.map(
             (f: any) => ({
               "@type": "Question",
-
               name: f.question,
-
               acceptedAnswer: {
                 "@type": "Answer",
                 text: f.answer,
@@ -247,14 +235,12 @@ export const Route = createFileRoute("/article/$slug")({
 
     return {
       meta,
-
       links: [
         {
           rel: "canonical",
           href: canonicalUrl,
         },
       ],
-
       scripts,
     };
   },
@@ -268,8 +254,7 @@ export const Route = createFileRoute("/article/$slug")({
       </h1>
 
       <p className="mt-2 text-muted-foreground">
-        This story may have moved or been
-        unpublished.
+        This story may have moved or been unpublished.
       </p>
 
       <Link
@@ -285,10 +270,12 @@ export const Route = createFileRoute("/article/$slug")({
 function ArticlePage() {
   const { slug } = Route.useParams();
 
-  // IMPORTANTE:
-  // Usamos directamente los datos devueltos por el loader.
-  // No usamos useSuspenseQuery ni React Query aquí.
   const data = Route.useLoaderData();
+
+  console.log(
+    "🔥 ARTICLE COMPONENT RENDER:",
+    data.article?.title ?? "NULL",
+  );
 
   const article: any = data.article;
   const related = data.related ?? [];
@@ -323,13 +310,11 @@ function ArticlePage() {
               ? {
                   label:
                     article.categories.name,
-
                   href: `/category/${article.categories.slug}`,
                 }
               : {
                   label: "Article",
                 },
-
             {
               label: article.title,
             },
@@ -399,8 +384,7 @@ function ArticlePage() {
               <span className="flex items-center gap-1">
                 <Clock className="h-3 w-3" />
 
-                {article.reading_time} min
-                read
+                {article.reading_time} min read
               </span>
             )}
 
@@ -427,9 +411,7 @@ function ArticlePage() {
         {article.featured_image && (
           <div className="mt-8 overflow-hidden rounded-xl">
             <img
-              src={
-                article.featured_image
-              }
+              src={article.featured_image}
               alt={article.title}
               className="aspect-[16/9] w-full object-cover"
             />
@@ -474,8 +456,7 @@ function ArticlePage() {
               dangerouslySetInnerHTML={{
                 __html:
                   renderContent(
-                    article.content ||
-                      "",
+                    article.content || "",
                   ),
               }}
             />
@@ -483,12 +464,10 @@ function ArticlePage() {
             {Array.isArray(
               article.faq,
             ) &&
-              article.faq.length >
-                0 && (
+              article.faq.length > 0 && (
                 <section className="mt-12">
                   <h2 className="font-display text-2xl font-bold text-foreground">
-                    Frequently asked
-                    questions
+                    Frequently asked questions
                   </h2>
 
                   <div className="mt-4 divide-y divide-border rounded-lg border border-border">
@@ -502,15 +481,11 @@ function ArticlePage() {
                           className="group p-4"
                         >
                           <summary className="cursor-pointer list-none font-semibold text-foreground marker:hidden">
-                            {
-                              f.question
-                            }
+                            {f.question}
                           </summary>
 
                           <p className="mt-2 text-sm text-muted-foreground">
-                            {
-                              f.answer
-                            }
+                            {f.answer}
                           </p>
                         </details>
                       ),
@@ -579,11 +554,7 @@ function ArticlePage() {
                   {article.profiles
                     .bio && (
                     <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
-                      {
-                        article
-                          .profiles
-                          .bio
-                      }
+                      {article.profiles.bio}
                     </p>
                   )}
                 </div>
@@ -670,21 +641,14 @@ function ArticlePage() {
                   key={r.slug}
                   article={{
                     slug: r.slug,
-
                     title: r.title,
-
-                    excerpt:
-                      r.excerpt,
-
+                    excerpt: r.excerpt,
                     featured_image:
                       r.featured_image,
-
                     reading_time:
                       r.reading_time,
-
                     published_at:
                       r.published_at,
-
                     category_slug:
                       article.categories
                         ?.slug,
@@ -726,7 +690,6 @@ function renderContent(
 ): string {
   return html.replace(
     /<(h2|h3)>([^<]+)<\/\1>/g,
-
     (_m, tag, text) => {
       const id =
         slugifyHeading(text);
@@ -772,11 +735,9 @@ function extractHeadings(
         m[1] === "h2"
           ? 2
           : 3,
-
       id: slugifyHeading(
         m[2],
       ),
-
       text: m[2],
     });
   }
