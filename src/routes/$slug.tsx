@@ -5,45 +5,41 @@ export const Route = createFileRoute("/$slug")({
   loader: async ({ params }) => {
     const { slug } = params;
 
+    console.log(`[legacy redirect] Checking slug: ${slug}`);
+
+    let article;
+
     try {
-      // Comprobamos si realmente existe un artículo con este slug.
-      const article = await getArticleBySlug({
+      article = await getArticleBySlug({
         data: {
           slug,
         },
       });
-
-      // Si no existe ningún artículo con ese slug,
-      // devolvemos un 404 real.
-      if (!article) {
-        throw notFound();
-      }
-
-      // Si existe, redirigimos permanentemente a la URL canónica.
-      throw redirect({
-        to: "/article/$slug",
-        params: {
-          slug,
-        },
-        statusCode: 301,
-      });
     } catch (error) {
-      // Los redirects y notFound de TanStack Router
-      // deben propagarse.
-      if (
-        error &&
-        typeof error === "object" &&
-        ("isRedirect" in error ||
-          "isNotFound" in error ||
-          "statusCode" in error)
-      ) {
-        throw error;
-      }
-
-      console.error(`[legacy article redirect] Error checking slug: ${slug}`, error);
+      console.error(
+        `[legacy redirect] Error checking article: ${slug}`,
+        error
+      );
 
       throw notFound();
     }
+
+    if (!article) {
+      console.log(`[legacy redirect] Article not found: ${slug}`);
+      throw notFound();
+    }
+
+    console.log(
+      `[legacy redirect] Redirecting /${slug} -> /article/${slug}`
+    );
+
+    throw redirect({
+      to: "/article/$slug",
+      params: {
+        slug,
+      },
+      statusCode: 301,
+    });
   },
 
   component: () => null,
