@@ -14,9 +14,7 @@ export const Route = createFileRoute("/editorial-policy")({
     <LegalLayout title="Editorial Policy" updated="July 12, 2026">
       <h2>Our standards</h2>
       <p>
-        Every FinanceHub USA article is written by a knowledgeable contributor, reviewed
-        by an editor, and fact-checked against primary sources (SEC filings, IRS
-        publications, Federal Reserve data, and reputable news outlets).
+        Every FinanceHub USA article is written by a knowledgeable contributor, reviewed by an editor, and fact-checked against primary sources (SEC filings, IRS publications, Federal Reserve data, and reputable news outlets).
       </p>
       <h2>Independence</h2>
       <p>
