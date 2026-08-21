@@ -18,6 +18,121 @@
       "source": "/how-much-should-you-save-from-every-paycheck",
       "destination": "/article/how-much-should-you-save-from-every-paycheck",
       "permanent": true
+    },
+    {
+      "source": "/tools/compound-interest",
+      "destination": "/compound-interest",
+      "permanent": true
+    },
+    {
+      "source": "/tools/mortgage",
+      "destination": "/mortgage",
+      "permanent": true
+    },
+    {
+      "source": "/tools/loan",
+      "destination": "/loan",
+      "permanent": true
+    },
+    {
+      "source": "/insurance-premium-vs-deductible-explained",
+      "destination": "/article/insurance-premium-vs-deductible-explained",
+      "permanent": true
+    },
+    {
+      "source": "/stock-market-outlook-what-investors-should-expect",
+      "destination": "/article/stock-market-outlook-what-investors-should-expect",
+      "permanent": true
+    },
+    {
+      "source": "/do-you-pay-taxes-when-you-transfer-money-between-banks",
+      "destination": "/article/do-you-pay-taxes-when-you-transfer-money-between-banks",
+      "permanent": true
+    },
+    {
+      "source": "/federal-reserve-holds-rates-what-investors-should-know",
+      "destination": "/article/federal-reserve-holds-rates-what-investors-should-know",
+      "permanent": true
+    },
+    {
+      "source": "/ai-stocks-to-watch-before-the-next-market-rally",
+      "destination": "/article/ai-stocks-to-watch-before-the-next-market-rally",
+      "permanent": true
+    },
+    {
+      "source": "/cooling-inflation-could-lift-stocks-late-2026",
+      "destination": "/article/cooling-inflation-could-lift-stocks-late-2026",
+      "permanent": true
+    },
+    {
+      "source": "/how-to-start-investing-in-2026",
+      "destination": "/article/how-to-start-investing-in-2026",
+      "permanent": true
+    },
+    {
+      "source": "/what-happens-to-your-stock-if-a-company-is-bought",
+      "destination": "/article/what-happens-to-your-stock-if-a-company-is-bought",
+      "permanent": true
+    },
+    {
+      "source": "/roth-ira-vs-traditional-ira-2026",
+      "destination": "/article/roth-ira-vs-traditional-ira-2026",
+      "permanent": true
+    },
+    {
+      "source": "/can-you-have-a-401k-and-an-ira-at-the-same-time",
+      "destination": "/article/can-you-have-a-401k-and-an-ira-at-the-same-time",
+      "permanent": true
+    },
+    {
+      "source": "/25-easy-ways-save-money-every-month",
+      "destination": "/article/25-easy-ways-save-money-every-month",
+      "permanent": true
+    },
+    {
+      "source": "/bitcoin-vs-gold-which-hedge-wins-2026",
+      "destination": "/article/bitcoin-vs-gold-which-hedge-wins-2026",
+      "permanent": true
+    },
+    {
+      "source": "/are-venmo-payments-taxable-in-2026",
+      "destination": "/article/are-venmo-payments-taxable-in-2026",
+      "permanent": true
+    },
+    {
+      "source": "/do-you-pay-taxes-on-zelle-payments",
+      "destination": "/article/do-you-pay-taxes-on-zelle-payments",
+      "permanent": true
+    },
+    {
+      "source": "/best-business-credit-cards-2026",
+      "destination": "/article/best-business-credit-cards-2026",
+      "permanent": true
+    },
+    {
+      "source": "/business-cash-flow-management-tips",
+      "destination": "/article/business-cash-flow-management-tips",
+      "permanent": true
+    },
+    {
+      "source": "/understanding-compound-interest-guide",
+      "destination": "/article/understanding-compound-interest-guide",
+      "permanent": true
+    },
+    {
+      "source": "/how-to-create-a-budget-that-works",
+      "destination": "/article/how-to-create-a-budget-that-works",
+      "permanent": true
+    },
+    {
+      "source": "/how-falling-inflation-could-impact-mortgage-rates",
+      "destination": "/article/how-falling-inflation-could-impact-mortgage-rates",
+      "permanent": true
+    },
+    {
+      "source": "/ai-stocks-still-leading-winners-and-risks-to-watch",
+      "destination": "/article/ai-stocks-still-leading-winners-and-risks-to-watch",
+      "permanent": true
     }
   ]
 }
