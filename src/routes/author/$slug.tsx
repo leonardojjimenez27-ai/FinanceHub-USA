@@ -1,20 +1,14 @@
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { 
-  Twitter, 
-  Mail, 
-  BookOpen, 
-  Award, 
+import {
+  Twitter,
+  Mail,
+  BookOpen,
   TrendingUp,
   ExternalLink,
   CheckCircle2,
-  Users,
   Shield,
   Sparkles,
-  MapPin,
-  Calendar,
-  Clock,
-  ArrowLeft
+  ArrowLeft,
 } from "lucide-react";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { NewsletterForm } from "@/components/site/NewsletterForm";
@@ -22,24 +16,22 @@ import { ArticleCard } from "@/components/site/ArticleCard";
 import { supabase } from "@/integrations/supabase/client";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 
-// ✅ Query para obtener datos del autor por slug
 const authorOptions = (slug: string) =>
   queryOptions({
     queryKey: ["author", slug],
     queryFn: async () => {
-      // 1. Obtener el perfil del autor
       const { data: profile, error: profileError } = await supabase
         .from("profiles")
-        .select("id, display_name, bio, avatar_url, twitter, website, slug, created_at")
+        .select(
+          "id, display_name, bio, avatar_url, twitter, website, slug, created_at",
+        )
         .eq("slug", slug)
         .maybeSingle();
 
       if (profileError || !profile) {
-        // Si no hay perfil, devolvemos null para que el loader devuelva notFound
         return { profile: null, articles: [] };
       }
 
-      // 2. Obtener sus artículos publicados
       const { data: articles, error: articlesError } = await supabase
         .from("articles")
         .select(`
@@ -63,27 +55,41 @@ const authorOptions = (slug: string) =>
         return { profile, articles: [] };
       }
 
-      return { profile, articles: articles ?? [] };
+      return {
+        profile,
+        articles: articles ?? [],
+      };
     },
   });
 
-// ✅ Ruta dinámica para autores
 export const Route = createFileRoute("/author/$slug")({
   loader: async ({ params, context }) => {
-    const data = await context.queryClient.ensureQueryData(authorOptions(params.slug));
-    if (!data.profile) throw notFound();
+    const data = await context.queryClient.ensureQueryData(
+      authorOptions(params.slug),
+    );
+
+    if (!data.profile) {
+      throw notFound();
+    }
+
     return data;
   },
+
   head: ({ params, loaderData }) => {
     const profile: any = loaderData?.profile;
+
     if (!profile) {
       return {
         meta: [{ title: "Author not found" }],
       };
     }
+
     const name = profile.display_name || params.slug;
     const title = `${name} — FinanceHub USA Author`;
-    const desc = profile.bio || `Articles by ${name} on FinanceHub USA.`;
+    const desc =
+      profile.bio ||
+      `Articles and financial education content by ${name} on FinanceHub USA.`;
+
     return {
       meta: [
         { title },
@@ -92,18 +98,30 @@ export const Route = createFileRoute("/author/$slug")({
         { property: "og:description", content: desc },
         { property: "og:url", content: `/author/${params.slug}` },
         { property: "og:type", content: "profile" },
-        { property: "profile:first_name", content: name.split(" ")[0] || name },
-        { property: "profile:last_name", content: name.split(" ").slice(1).join(" ") || "" },
+        {
+          property: "profile:first_name",
+          content: name.split(" ")[0] || name,
+        },
+        {
+          property: "profile:last_name",
+          content: name.split(" ").slice(1).join(" ") || "",
+        },
         { name: "twitter:card", content: "summary_large_image" },
       ],
       links: [{ rel: "canonical", href: `/author/${params.slug}` }],
     };
   },
+
   component: AuthorPage,
+
   notFoundComponent: () => (
     <div className="container-page py-16 text-center">
       <h1 className="font-display text-3xl font-bold">Author not found</h1>
-      <p className="mt-2 text-muted-foreground">This author profile doesn't exist.</p>
+
+      <p className="mt-2 text-muted-foreground">
+        This author profile does not exist.
+      </p>
+
       <Link to="/" className="mt-4 inline-block text-accent underline">
         Back home
       </Link>
@@ -111,21 +129,26 @@ export const Route = createFileRoute("/author/$slug")({
   ),
 });
 
-// ✅ Componente principal de la página de autor
 function AuthorPage() {
   const { slug } = Route.useParams();
   const { data } = useSuspenseQuery(authorOptions(slug));
+
   const { profile, articles } = data;
 
-  if (!profile) return null;
+  if (!profile) {
+    return null;
+  }
 
   const authorName = profile.display_name || slug;
-  const authorAvatar = profile.avatar_url || "/placeholder-avatar.jpg";
-  const authorBio = profile.bio || 
-    `${authorName} is a contributor to FinanceHub USA, writing about US markets, crypto, personal finance, and building lasting wealth.`;
 
-  // ✅ Fecha de membresía
-  const memberSince = profile.created_at 
+  const authorAvatar =
+    profile.avatar_url || "/placeholder-avatar.jpg";
+
+  const authorBio =
+    profile.bio ||
+    `${authorName} contributes financial education content to FinanceHub USA, covering investing, personal finance, retirement, markets, banking, credit, and related topics.`;
+
+  const memberSince = profile.created_at
     ? new Date(profile.created_at).toLocaleDateString("en-US", {
         month: "long",
         year: "numeric",
@@ -134,24 +157,23 @@ function AuthorPage() {
 
   return (
     <div className="container-page py-8">
-      {/* Breadcrumbs */}
-      <Breadcrumbs items={[
-        { label: "Authors", href: "/authors" },
-        { label: authorName }
-      ]} />
+      <Breadcrumbs
+        items={[
+          { label: "Authors", href: "/authors" },
+          { label: authorName },
+        ]}
+      />
 
-      {/* ✅ Botón de volver */}
       <Link
         to="/about"
         className="mt-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
       >
-        <ArrowLeft className="h-4 w-4" /> Back to About
+        <ArrowLeft className="h-4 w-4" />
+        Back to About
       </Link>
 
-      {/* ✅ Hero del autor */}
       <div className="mt-6 rounded-2xl bg-gradient-to-br from-primary/95 to-primary/80 p-8 text-primary-foreground md:p-12">
         <div className="grid gap-8 md:grid-cols-[auto,1fr] md:items-center">
-          {/* Avatar */}
           <div className="flex justify-center md:justify-start">
             <img
               src={authorAvatar}
@@ -159,124 +181,174 @@ function AuthorPage() {
               className="h-28 w-28 rounded-full border-4 border-accent/50 object-cover md:h-36 md:w-36"
             />
           </div>
-          
+
           <div className="text-center md:text-left">
             <p className="text-xs font-semibold uppercase tracking-widest text-accent">
               Author
             </p>
+
             <h1 className="mt-2 font-display text-4xl font-bold md:text-5xl">
               {authorName}
             </h1>
+
             {memberSince && (
               <p className="mt-1 text-sm text-primary-foreground/60">
-                Member since {memberSince}
+                Contributor since {memberSince}
               </p>
             )}
+
             <p className="mt-3 max-w-2xl text-base text-primary-foreground/80">
               {authorBio}
             </p>
-            
-            {/* Redes sociales */}
+
             <div className="mt-4 flex flex-wrap items-center justify-center gap-3 md:justify-start">
-              <span className="inline-flex items-center gap-1.5 text-sm text-primary-foreground/60">
-                <MapPin className="h-4 w-4" /> United States
-              </span>
               {profile.twitter && (
                 <a
-                  href={`https://x.com/${profile.twitter.replace('@', '')}`}
+                  href={`https://x.com/${profile.twitter.replace("@", "")}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-white/20 transition"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-sm font-medium text-primary-foreground transition hover:bg-white/20"
                 >
-                  <Twitter className="h-4 w-4" /> X
+                  <Twitter className="h-4 w-4" />
+                  X
                 </a>
               )}
+
               {profile.website && (
                 <a
                   href={profile.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-white/20 transition"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-sm font-medium text-primary-foreground transition hover:bg-white/20"
                 >
-                  <ExternalLink className="h-4 w-4" /> Website
+                  <ExternalLink className="h-4 w-4" />
+                  Website
                 </a>
               )}
+
               <a
                 href="mailto:admin@financehubus.com"
-                className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-white/20 transition"
+                className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-sm font-medium text-primary-foreground transition hover:bg-white/20"
               >
-                <Mail className="h-4 w-4" /> Email
+                <Mail className="h-4 w-4" />
+                Email
               </a>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ✅ Credenciales - Sección clave para AdSense */}
       <section className="mt-10">
-        <h2 className="font-display text-2xl font-bold text-foreground">Credentials & Experience</h2>
+        <h2 className="font-display text-2xl font-bold text-foreground">
+          Background & Focus
+        </h2>
+
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
-          <CredentialCard 
-            icon={<Award className="h-5 w-5" />}
-            title="Financial Education Advocate"
-            description="Committed to making financial literacy accessible to all Americans through clear, practical content."
-          />
-          <CredentialCard 
+          <InfoCard
             icon={<BookOpen className="h-5 w-5" />}
-            title="Published Financial Writer"
-            description="Covering US markets, crypto, personal finance, and economic trends since 2024."
+            title="Financial Education"
+            description="Focused on explaining personal finance, investing, retirement, credit, banking, and related financial topics in clear language."
           />
-          <CredentialCard 
+
+          <InfoCard
             icon={<TrendingUp className="h-5 w-5" />}
-            title="Investment Research"
-            description="In-depth analysis of stocks, ETFs, and portfolio strategies for long-term wealth building."
+            title="Markets & Investing"
+            description="Covers U.S. markets, ETFs, stocks, portfolio concepts, economic developments, and long-term investing topics."
           />
-          <CredentialCard 
+
+          <InfoCard
             icon={<Shield className="h-5 w-5" />}
-            title="Editorial Integrity"
-            description="Committed to independent, unbiased financial journalism with rigorous fact-checking."
+            title="Source-Based Research"
+            description="Uses primary and reputable sources whenever practical, including government agencies, regulators, official company information, and established financial institutions."
+          />
+
+          <InfoCard
+            icon={<CheckCircle2 className="h-5 w-5" />}
+            title="Editorial Transparency"
+            description="FinanceHub USA discloses its editorial approach, corrections policy, advertising relationships, and financial disclaimer across the site."
           />
         </div>
       </section>
 
-      {/* ✅ Misión */}
       <section className="mt-10 rounded-2xl border border-border bg-secondary/40 p-6 md:p-8">
         <div className="flex items-center gap-3">
           <Sparkles className="h-6 w-6 text-accent" />
-          <h2 className="font-display text-2xl font-bold text-foreground">My Mission</h2>
+
+          <h2 className="font-display text-2xl font-bold text-foreground">
+            Editorial Mission
+          </h2>
         </div>
-        <p className="mt-3 max-w-3xl text-base text-muted-foreground leading-relaxed">
-          To help every American reader make smarter money decisions — with content that is 
-          easy to understand, rigorously fact-checked, and free of jargon. FinanceHub USA 
-          exists to bridge the gap between complex financial concepts and real-world application.
+
+        <p className="mt-3 max-w-3xl text-base leading-relaxed text-muted-foreground">
+          FinanceHub USA aims to make financial topics easier to understand by
+          combining practical explanations with research from reliable
+          sources. The goal is to help readers better understand financial
+          decisions, ask better questions, and conduct informed research before
+          acting.
         </p>
+
         <div className="mt-4 flex flex-wrap gap-4 text-sm">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="h-4 w-4 text-success" />
-            <span>Independent & unbiased</span>
+            <span>Independent editorial approach</span>
           </div>
+
           <div className="flex items-center gap-2">
             <CheckCircle2 className="h-4 w-4 text-success" />
-            <span>Fact-checked content</span>
+            <span>Primary sources when practical</span>
           </div>
+
           <div className="flex items-center gap-2">
             <CheckCircle2 className="h-4 w-4 text-success" />
-            <span>No jargon, just clarity</span>
+            <span>Clear financial education</span>
           </div>
+
           <div className="flex items-center gap-2">
             <CheckCircle2 className="h-4 w-4 text-success" />
-            <span>Made in the USA 🇺🇸</span>
+            <span>Focused on U.S. financial topics</span>
           </div>
         </div>
       </section>
 
-      {/* ✅ Artículos del autor */}
+      <section className="mt-10">
+        <h2 className="font-display text-2xl font-bold text-foreground">
+          Editorial Standards
+        </h2>
+
+        <p className="mt-3 max-w-3xl text-base leading-relaxed text-muted-foreground">
+          Content published under this author profile is created with an
+          emphasis on clarity, usefulness, and accurate representation of
+          financial information. Where appropriate, articles reference official
+          or established sources so readers can review additional information
+          directly.
+        </p>
+
+        <p className="mt-3 max-w-3xl text-base leading-relaxed text-muted-foreground">
+          Financial information can change over time. Interest rates, tax rules,
+          contribution limits, credit products, insurance terms, market data,
+          and regulations may change after publication. Articles may be updated
+          when meaningful new information becomes available.
+        </p>
+
+        <p className="mt-3 max-w-3xl text-base leading-relaxed text-muted-foreground">
+          Learn more in the{" "}
+          <Link
+            to="/editorial-policy"
+            className="text-accent hover:underline"
+          >
+            FinanceHub USA Editorial Policy
+          </Link>
+          .
+        </p>
+      </section>
+
       <section className="mt-12">
         <div className="flex items-center justify-between border-b border-border pb-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-accent">
               Latest from {authorName}
             </p>
+
             <h2 className="mt-1 font-display text-2xl font-bold text-foreground">
               Featured Articles
             </h2>
@@ -303,58 +375,67 @@ function AuthorPage() {
         ) : (
           <div className="mt-4 rounded-lg border border-dashed border-border p-8 text-center">
             <p className="text-sm text-muted-foreground">
-              No articles yet. Stay tuned — new content coming soon! 🚀
+              No articles are currently available from this author.
             </p>
           </div>
         )}
       </section>
 
-      {/* ✅ Newsletter CTA */}
       <section className="mt-12 rounded-2xl border border-border bg-card p-6">
         <div className="flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <h3 className="font-display text-xl font-bold text-foreground">
-              💌 Get the Money Briefing
+              Get The Money Briefing
             </h3>
+
             <p className="text-sm text-muted-foreground">
-              Markets, macro, and personal finance — delivered daily before the opening bell.
+              Receive FinanceHub USA articles and financial insights by email.
             </p>
           </div>
+
           <div className="w-full max-w-sm">
             <NewsletterForm source={`author-${slug}`} compact />
           </div>
         </div>
       </section>
 
-      {/* ✅ Aviso legal (OBLIGATORIO para AdSense en finanzas) */}
       <div className="mt-8 rounded-lg border-l-4 border-accent bg-accent/5 p-4">
         <p className="text-xs text-muted-foreground">
-          <strong>⚠️ Disclaimer:</strong> All content on FinanceHub USA is for 
-          <strong> informational and educational purposes</strong> only. It does not constitute 
-          personalized financial, investment, tax, or legal advice. Past performance does not 
-          guarantee future results. Always consult a qualified professional for your specific 
-          situation. See our <Link to="/disclaimer" className="text-accent hover:underline">full disclaimer</Link>.
+          <strong>Disclaimer:</strong> All content on FinanceHub USA is for{" "}
+          <strong>informational and educational purposes</strong> only. It does
+          not constitute personalized financial, investment, tax, legal,
+          insurance, credit, or other professional advice. Investing involves
+          risk, including possible loss of principal. Past performance does not
+          guarantee future results. See our{" "}
+          <Link
+            to="/disclaimer"
+            className="text-accent hover:underline"
+          >
+            full disclaimer
+          </Link>
+          .
         </p>
       </div>
     </div>
   );
 }
 
-// ✅ Componente auxiliar para credenciales
-function CredentialCard({ 
-  icon, 
-  title, 
-  description 
-}: { 
-  icon: React.ReactNode; 
-  title: string; 
-  description: string; 
+function InfoCard({
+  icon,
+  title,
+  description,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
 }) {
   return (
     <div className="flex gap-3 rounded-lg border border-border bg-card p-4 transition hover:border-accent hover:shadow-[var(--shadow-elegant)]">
       <div className="mt-0.5 text-accent">{icon}</div>
+
       <div>
         <h3 className="font-semibold text-foreground">{title}</h3>
+
         <p className="text-sm text-muted-foreground">{description}</p>
       </div>
     </div>
