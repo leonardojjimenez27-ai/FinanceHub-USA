@@ -25,7 +25,7 @@ export const Route = createFileRoute("/editorial-policy")({
       </p>
       <h2>Corrections</h2>
       <p>
-        If you spot an error, please email <em>editors@financehubusa.example</em>. We
+        If you spot an error, please email <em>admin@financehubus.com</em>. We
         promptly update articles and disclose material corrections.
       </p>
       <h2>Sources</h2>
