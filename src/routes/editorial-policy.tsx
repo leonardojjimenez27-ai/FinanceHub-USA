@@ -20,8 +20,7 @@ export const Route = createFileRoute("/editorial-policy")({
       </p>
       <h2>Independence</h2>
       <p>
-        Our editorial team is independent from our advertising and affiliate teams. Our
-        opinions and ratings are our own and are never influenced by compensation.
+        FinanceHub USA maintains editorial independence. Advertising, affiliate relationships, or other forms of compensation do not determine our editorial conclusions, opinions, or coverage. When applicable, sponsored or affiliate relationships are clearly disclosed to readers.
       </p>
       <h2>Corrections</h2>
       <p>
